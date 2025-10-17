@@ -103,3 +103,9 @@ Assets/FreeOpenBuilding_1.1.2/
 Assets/Stylized Vehicles Pack Free/
 Assets/vrbn_studios/
 
+
+# Ignore vendor meta files
+Assets/FreeOpenBuilding_1.1.2.meta
+Assets/Stylized Vehicles Pack Free.meta
+Assets/vrbn_studios.meta
+
