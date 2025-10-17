@@ -1,6 +1,18 @@
-# Victory Command
+# Victory Command - City System
 
-Victory Command is a WW2-themed base-building and strategy game inspired by classics like War2Victory/War2Glory.
-Manage resources, fortify your cities, train armies, recruit officers, and push your influence across multiple theaters in PvE campaigns.
+This module contains all ScriptableObject definitions and starting data for core city buildings in Victory Command.
 
-... (snipped for brevity)
+## Structure
+- `Assets/Scripts/Data/` — ScriptableObject definitions for each building
+- `Assets/Resources/ScriptableObjects/Buildings/` — Unity asset folder (empty for now)
+- `Assets/Scenes/City.unity` — Placeholder for main city scene
+
+Each SO defines:
+- Max Level
+- Base cost per resource type
+- Description and name
+
+## Next Steps
+- Open Unity and load this folder
+- Create instances of each `BuildingData` via `Assets → Create → IFC → Buildings → [Type]`
+- Drag them into the scene or link to building prefabs
