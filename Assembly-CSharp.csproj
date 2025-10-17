@@ -50,40 +50,30 @@
   <ItemGroup>
     <Compile Include="Assets\ScriptableObjects\Buildings\GeneralHQData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\MarketData.cs" />
-    <Compile Include="Assets\Scripts\Data\GeneralHQData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\WallData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\SteelPlantData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\VehicleFactoryData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\FarmData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\NavalYardData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\WarehouseData.cs" />
-    <Compile Include="Assets\Scripts\Data\MilitaryInstituteData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\BarracksData.cs" />
-    <Compile Include="Assets\Scripts\Data\HouseData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\RareMetalMineData.cs" />
     <Compile Include="Assets\Scripts\Data\OfficerData.cs" />
-    <Compile Include="Assets\Scripts\Data\WarehouseData.cs" />
     <Compile Include="Assets\Scripts\Data\ResourceCost.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\UltraConverterData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\HospitalData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\OilFieldData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ArmsPlantData.cs" />
-    <Compile Include="Assets\Scripts\Data\StaffHQData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\AcademyData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\DockyardData.cs" />
     <Compile Include="Assets\Scripts\Systems\ResourceTickService.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\AirportData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\HouseData.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Building.cs" />
-    <Compile Include="Assets\Scripts\Data\WallData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ResearchCenterData.cs" />
-    <Compile Include="Assets\Scripts\Data\ResearchCenterData.cs" />
-    <Compile Include="Assets\Scripts\Data\ArmsPlantData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\StaffHQData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\CommandTowerData.cs" />
-    <Compile Include="Assets\Scripts\Data\AirportData.cs" />
     <Compile Include="Assets\Scripts\Data\BuildingData.cs" />
-    <Compile Include="Assets\Scripts\Data\UltraConverterData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\MilitaryInstituteData.cs" />
   </ItemGroup>
   <ItemGroup>
