@@ -55,12 +55,18 @@
     <Compile Include="Assets\Scripts\Data\CityData.cs" />
     <Compile Include="Assets\Scripts\Data\CityConstants.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\VehicleFactoryData.cs" />
+    <Compile Include="Assets\vrbn_studios\2023_A\scripts\CameraFacingBillboard.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\FarmData.cs" />
+    <Compile Include="Assets\vrbn_studios\2023_A\scripts\DirtControllerInspector.cs" />
+    <Compile Include="Assets\vrbn_studios\2023_A\scripts\LightController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\NavalYardData.cs" />
+    <Compile Include="Assets\FreeOpenBuilding_1.1.2\FOB_1\Scripts\DoorMech.cs" />
+    <Compile Include="Assets\FreeOpenBuilding_1.1.2\FOB_1\Scripts\DrawerMech.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\WarehouseData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\BarracksData.cs" />
     <Compile Include="Assets\Scripts\CitySystem\CityManager.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\RareMetalMineData.cs" />
+    <Compile Include="Assets\vrbn_studios\2023_A\scripts\InteriorControllerInspector.cs" />
     <Compile Include="Assets\Scripts\Data\OfficerData.cs" />
     <Compile Include="Assets\Scripts\Data\ResourceCost.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\UltraConverterData.cs" />
@@ -68,6 +74,7 @@
     <Compile Include="Assets\ScriptableObjects\Buildings\OilFieldData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ArmsPlantData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\AcademyData.cs" />
+    <Compile Include="Assets\vrbn_studios\2023_A\scripts\EmissionController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\DockyardData.cs" />
     <Compile Include="Assets\Scripts\Systems\ResourceTickService.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\AirportData.cs" />
@@ -75,10 +82,24 @@
     <Compile Include="Assets\ScriptableObjects\Buildings\HouseData.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Building.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ResearchCenterData.cs" />
+    <Compile Include="Assets\vrbn_studios\2023_A\scripts\DirtController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\StaffHQData.cs" />
+    <Compile Include="Assets\vrbn_studios\2023_A\scripts\EmissionControllerInspector.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\CommandTowerData.cs" />
     <Compile Include="Assets\Scripts\Data\BuildingData.cs" />
+    <Compile Include="Assets\vrbn_studios\2023_A\scripts\InteriorController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\MilitaryInstituteData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\vrbn_studios\2023_A\Scenes\Readme.txt" />
+    <None Include="Assets\FreeOpenBuilding_1.1.2\FOB_Props\Material\UseMaterialFromBuildingFolder.txt" />
+    <None Include="Assets\vrbn_studios\2023_A\shader\customFunctionShader\customTangent.hlsl" />
+    <None Include="Assets\vrbn_studios\2023_A\shader\vrbnInteriorMappingURP.shader" />
+    <None Include="Assets\vrbn_studios\2023_A\shader\customFunctionShader\MidPlaneVrbnTransformUVs.hlsl" />
+    <None Include="Assets\FreeOpenBuilding_1.1.2\Important Info!.txt" />
+    <None Include="Assets\FreeOpenBuilding_1.1.2\FOB_Props\Texture\UseTextureFromBuildingFolder.txt" />
+    <None Include="Assets\vrbn_studios\2023_A\shader\customFunctionShader\raycastingTangent.hlsl" />
+    <None Include="Assets\vrbn_studios\2023_A\shader\customFunctionShader\VrbnTransformUVs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

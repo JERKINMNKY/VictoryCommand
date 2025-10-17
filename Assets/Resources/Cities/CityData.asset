@@ -23,17 +23,17 @@ MonoBehaviour:
     isUnlocked: 1
     unlockLevel: 5
     gridPosition: {x: 0, y: 0}
-    assignedBuilding: {fileID: 11400000, guid: 2616cccdabbdb1a4ea7c29ad4c728ebc, type: 2}
+    assignedBuilding: {fileID: 11400000, guid: 506390edc054ae64fac485b82c15d521, type: 2}
   - tileIndex: 1
     isUnlocked: 1
     unlockLevel: 1
     gridPosition: {x: 1, y: 0}
-    assignedBuilding: {fileID: 11400000, guid: 960b12a77b740d946b492b5bac0101a1, type: 2}
+    assignedBuilding: {fileID: 0}
   - tileIndex: 2
     isUnlocked: 1
     unlockLevel: 1
     gridPosition: {x: 2, y: 0}
-    assignedBuilding: {fileID: 11400000, guid: 92af07a253413c848ae71aa48b0852fe, type: 2}
+    assignedBuilding: {fileID: 0}
   - tileIndex: 3
     isUnlocked: 0
     unlockLevel: 1
@@ -146,7 +146,7 @@ MonoBehaviour:
     assignedBuilding: {fileID: 0}
   editorCityGridColumns: 6
   editorResourceGridColumns: 6
-  editorLastSelectedTile: 13
+  editorLastSelectedTile: 20
   resourceTiles:
   - tileIndex: 0
     isUnlocked: 0
