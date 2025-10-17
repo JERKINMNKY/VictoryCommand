@@ -1,0 +1,361 @@
+{
+  "entities": {
+    "Player": {
+      "id": "string",
+      "username": "string",
+      "cities": ["CityId"],
+      "officers": ["OfficerId"],
+      "gearInventory": ["GearId"],
+      "resources": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0,
+        "Gold": 0,
+        "DarkEnergy": 0
+      },
+      "premiumCurrency": 0,
+      "missions": {
+        "active": ["MissionId"],
+        "completed": ["MissionId"]
+      },
+      "globalResearch": ["ResearchTechId"],
+      "dispatchTemplates": ["DispatchTemplateId"],
+      "allianceId": null
+    },
+    "City": {
+      "id": "string",
+      "ownerId": "PlayerId",
+      "name": "string",
+      "coordinates": { "x": 0, "y": 0 },
+      "level": 1,
+      "blueprintCap": 1,
+      "specialization": "Production",
+      "laborTotal": 0,
+      "laborAssigned": 0,
+      "laborIdle": 0,
+      "morale": 1.0,
+      "reputation": 100,
+      "cityState": "Normal",
+      "buildingSlots": 0,
+      "fieldSlots": 0,
+      "buildings": ["BuildingId"],
+      "resourceFields": ["ResourceFieldId"],
+      "garrison": ["UnitId"],
+      "incomingDispatches": ["DispatchId"],
+      "outgoingDispatches": ["DispatchId"]
+    },
+    "ResourceField": {
+      "id": "string",
+      "cityId": "CityId",
+      "type": "Food",
+      "level": 1,
+      "laborAssigned": 0,
+      "isActive": true
+    },
+    "Building": {
+      "id": "string",
+      "cityId": "CityId",
+      "type": "StaffHQ",
+      "level": 0,
+      "status": "Idle",
+      "upgradeStartTime": null,
+      "upgradeFinishTime": null,
+      "prerequisites": [
+        {
+          "buildingType": "string",
+          "minLevel": 0
+        }
+      ],
+      "blueprintRequired": false,
+      "effects": {
+        "laborBonus": 0,
+        "storageBonus": {
+          "Food": 0,
+          "Steel": 0,
+          "Oil": 0,
+          "RareMetal": 0
+        },
+        "productionBonus": {
+          "Food": 0.0,
+          "Steel": 0.0,
+          "Oil": 0.0,
+          "RareMetal": 0.0
+        },
+        "dispatchSlotsBonus": 0,
+        "marchSlotsBonus": 0
+      }
+    },
+    "ResearchTech": {
+      "id": "string",
+      "name": "string",
+      "branch": "Economy",
+      "level": 0,
+      "maxLevel": 1,
+      "cost": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0
+      },
+      "timeSeconds": 0,
+      "prerequisites": ["ResearchTechId"],
+      "effects": {
+        "productionPct": {
+          "Food": 0.0,
+          "Steel": 0.0,
+          "Oil": 0.0,
+          "RareMetal": 0.0
+        },
+        "unitAttackPct": 0.0,
+        "unitDefensePct": 0.0,
+        "upkeepReductionPct": 0.0
+      }
+    },
+    "ResearchQueue": {
+      "ownerId": "PlayerId",
+      "active": "ResearchTechId",
+      "queue": ["ResearchTechId"],
+      "speedupUsed": ["SpeedupItemId"]
+    },
+    "Unit": {
+      "id": "string",
+      "ownerCityId": "CityId",
+      "type": "Infantry",
+      "tier": 1,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": 0,
+        "initiative": 0,
+        "range": 0,
+        "speed": 0
+      },
+      "upkeep": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0
+      },
+      "cost": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0
+      },
+      "buildTime": 0,
+      "transformFrom": {
+        "unitType": "string",
+        "ratio": 0.0
+      },
+      "effectiveAgainst": ["UnitType"],
+      "weakAgainst": ["UnitType"],
+      "status": "Idle"
+    },
+    "UnitFactory": {
+      "id": "string",
+      "cityId": "CityId",
+      "type": "ArmsPlant",
+      "queue": [
+        {
+          "unitType": "string",
+          "quantity": 0,
+          "startTime": null,
+          "finishTime": null
+        }
+      ],
+      "maxSlots": 1,
+      "speedupsUsed": ["SpeedupItemId"]
+    },
+    "ConversionFacility": {
+      "id": "string",
+      "cityId": "CityId",
+      "level": 0,
+      "status": "Idle",
+      "queue": [
+        {
+          "fromType": "string",
+          "toType": "string",
+          "inputCount": 0,
+          "outputCount": 0,
+          "startTime": null,
+          "finishTime": null
+        }
+      ],
+      "requirements": {
+        "DarkEnergy": 0,
+        "RareMetal": 0
+      }
+    },
+    "Officer": {
+      "id": "string",
+      "name": "string",
+      "rarity": 1,
+      "level": 1,
+      "experience": 0,
+      "stats": {
+        "military": 0,
+        "polities": 0,
+        "knowledge": 0
+      },
+      "skillPoints": 0,
+      "skills": ["SkillInstanceId"],
+      "gearSlots": {
+        "weapon": "GearId",
+        "armor": "GearId",
+        "accessory": "GearId"
+      },
+      "assignment": "Idle"
+    },
+    "SkillInstance": {
+      "id": "string",
+      "skillId": "SkillId",
+      "level": 1,
+      "cooldownRemaining": 0
+    },
+    "Skill": {
+      "id": "string",
+      "name": "string",
+      "type": "Passive",
+      "effect": {
+        "attackPct": 0.0,
+        "defensePct": 0.0,
+        "productionPct": 0.0
+      },
+      "cooldown": 0,
+      "maxLevel": 1,
+      "upgradeCost": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0
+      },
+      "prerequisites": ["SkillId"]
+    },
+    "Gear": {
+      "id": "string",
+      "name": "string",
+      "type": "Weapon",
+      "rarity": 1,
+      "statModifiers": {
+        "attackPct": 0.0,
+        "hpFlat": 0,
+        "defensePct": 0.0
+      },
+      "level": 1,
+      "upgradePath": ["GearId"],
+      "equipRequirements": {
+        "officerLevel": 1,
+        "rarity": 1
+      }
+    },
+    "Dispatch": {
+      "id": "string",
+      "fromCityId": "CityId",
+      "toCityId": "CityId",
+      "resources": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0
+      },
+      "startTime": null,
+      "arrivalTime": null,
+      "status": "InTransit"
+    },
+    "Battle": {
+      "id": "string",
+      "attackerId": "PlayerId",
+      "defenderId": "PlayerId",
+      "cityDefenderId": null,
+      "startTime": null,
+      "result": "Pending",
+      "loot": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0
+      },
+      "gearDrops": ["GearId"],
+      "officerXpGains": {
+        "attackerOfficer": 0,
+        "defenderOfficer": 0
+      },
+      "unitsInvolved": ["UnitId"],
+      "modifiers": {
+        "terrain": "Plains",
+        "moraleFactor": 1.0
+      }
+    },
+    "Mission": {
+      "id": "string",
+      "name": "string",
+      "description": "string",
+      "requirements": {
+        "destroyNpcCount": 0,
+        "upgradeBuilding": {
+          "type": "string",
+          "level": 0
+        },
+        "trainUnit": {
+          "unitType": "string",
+          "quantity": 0
+        }
+      },
+      "rewards": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0,
+        "gear": ["GearId"],
+        "officerShards": 0,
+        "premium": 0
+      },
+      "status": "Locked"
+    },
+    "SpeedupItem": {
+      "id": "string",
+      "name": "Speedup",
+      "applyTo": "Building",
+      "timeReduction": 0,
+      "quantity": 0
+    },
+    "DispatchTemplate": {
+      "id": "string",
+      "playerId": "PlayerId",
+      "fromCityId": "CityId",
+      "toCityId": "CityId",
+      "resourcePercentages": {
+        "Food": 0,
+        "Steel": 0,
+        "Oil": 0,
+        "RareMetal": 0
+      },
+      "repeatCount": 0
+    }
+  },
+  "relationships": {
+    "Player → City": "one_to_many",
+    "City → Building": "one_to_many",
+    "City → ResourceField": "one_to_many",
+    "City → Dispatch": "one_to_many",
+    "City → Unit": "one_to_many",
+    "City → ConversionFacility": "one_to_one",
+    "City → UnitFactory": "one_to_many",
+    "Player → Officer": "one_to_many",
+    "Officer → Gear": "many_to_many",
+    "Player → ResearchTech": "many_to_many",
+    "Player / City → Mission": "many_to_many",
+    "Dispatch → City": "many_to_one",
+    "Battle → Unit": "many_to_many",
+    "Battle → Player": "many_to_one"
+  },
+  "notes": {
+    "All timestamps are server UTC time.": "",
+    "Resource, cost, and stat values are placeholders; design team to fill based on balance.": "",
+    "“effects” dictionaries in Building, ResearchTech, etc. should reflect additive or multiplicative modifiers applied at runtime.": "",
+    "Units should be instantiated either from build queues or conversion facility when finish events trigger.": "",
+    "Dispatch templates allow players to predefine resource routes.": "",
+    "Missions subscribe to game events (unit built, battle won, building upgraded).": ""
+  }
+}
