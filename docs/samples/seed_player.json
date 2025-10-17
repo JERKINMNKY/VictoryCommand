@@ -1,0 +1,6 @@
+{
+  "id": "player_001",
+  "username": "tester",
+  "resources": { "Food": 1000, "Steel": 800, "Oil": 500, "RareMetal": 50 },
+  "premiumCurrency": 100
+}

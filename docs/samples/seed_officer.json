@@ -1,0 +1,7 @@
+{
+  "id": "officer_001",
+  "name": "Captain Sample",
+  "rarity": 1,
+  "level": 1,
+  "stats": { "military": 5, "politics": 2, "knowledge": 1 }
+}

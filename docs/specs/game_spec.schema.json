@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Victory Command Game Spec",
+  "type": "object",
+  "properties": {
+    "entities": {
+      "type": "object",
+      "properties": {
+        "Player": { "$ref": "#/definitions/Player" },
+        "City": { "$ref": "#/definitions/City" },
+        "Building": { "$ref": "#/definitions/Building" },
+        "Unit": { "$ref": "#/definitions/Unit" }
+      }
+    }
+  },
+  "definitions": {
+    "ResourceMap": {
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    },
+    "Player": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "resources": { "$ref": "#/definitions/ResourceMap" },
+        "premiumCurrency": { "type": "number" }
+      },
+      "required": ["id", "username"]
+    },
+    "City": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "level": { "type": "integer" },
+        "laborTotal": { "type": "integer" },
+        "laborIdle": { "type": "integer" }
+      },
+      "required": ["id", "name"]
+    },
+    "Building": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "level": { "type": "integer" }
+      },
+      "required": ["id", "type"]
+    },
+    "Unit": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "tier": { "type": "integer" }
+      },
+      "required": ["id", "type"]
+    }
+  }
+}
