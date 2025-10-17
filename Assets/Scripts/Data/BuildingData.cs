@@ -3,6 +3,24 @@ using UnityEngine;
 
 namespace IFC.Data
 {
+    public enum BuildingType
+    {
+        Core,
+        Military,
+        Resource,
+        Endgame
+    }
+
+    [System.Serializable]
+    public class TileData
+    {
+        public int tileIndex;
+        public bool isUnlocked = false;
+        public int unlockLevel = 1;
+        public UnityEngine.Vector2Int gridPosition = UnityEngine.Vector2Int.zero;
+        public BuildingData assignedBuilding;
+    }
+
     [CreateAssetMenu(fileName = "BuildingData", menuName = "IFC/Building Data", order = 1)]
     public class BuildingData : ScriptableObject
     {
@@ -10,6 +28,14 @@ namespace IFC.Data
         [SerializeField] private int _level;
         [SerializeField] private int _upgradeTimeSeconds;
         [SerializeField] private List<ResourceCost> _costByResource;
+
+        [Header("Game Rules")]
+        public BuildingType buildingType = BuildingType.Core;
+        public bool isUniquePerCity = false;
+        [Tooltip("Minimum city level required to unlock this building type")]
+        public int unlockLevel = 1;
+    [Tooltip("Maximum instances of this building per city. 0 = no limit.")]
+    public int maxPerCity = 0;
 
         public string BuildingName => _buildingName;
         public int Level => _level;
