@@ -3,16 +3,18 @@
 This module contains all ScriptableObject definitions and starting data for core city buildings in Victory Command.
 
 ## Structure
-- `Assets/Scripts/Data/` — ScriptableObject definitions for each building
-- `Assets/Resources/ScriptableObjects/Buildings/` — Unity asset folder (empty for now)
-- `Assets/Scenes/City.unity` — Placeholder for main city scene
+Victory Command — short project summary
 
-Each SO defines:
-- Max Level
-- Base cost per resource type
-- Description and name
+This repository contains the Unity project for Victory Command, a prototype strategy/city system with editor tooling and ScriptableObject-driven game data.
 
-## Next Steps
-- Open Unity and load this folder
-- Create instances of each `BuildingData` via `Assets → Create → IFC → Buildings → [Type]`
-- Drag them into the scene or link to building prefabs
+Primary pointers
+- Design docs and system blueprint: `docs/ARCHITECTURE.md` (canonical entrypoint for automated tools and contributors).
+- Sanitized design (safe for automated ingestion): `docs/ARCHITECTURE_SANITIZED.md`.
+- Module breakdown: `docs/modules/` (per-subsystem documents and data models).
+
+Where to edit
+- Gameplay code: `Assets/Scripts/`
+- Editor tooling: `Assets/Editor/` (CityTileEditor and helpers)
+- ScriptableObject data: `Assets/Scripts/Data/` and `Assets/Resources/`
+
+If you plan to run automated analysis, point the tool at `docs/ARCHITECTURE.md` — it contains a TOC and links to machine-readable specs.

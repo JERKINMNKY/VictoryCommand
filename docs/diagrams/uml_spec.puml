@@ -1,0 +1,122 @@
+@startuml
+
+class Player {
+  + id: String
+  + username: String
+  + resources: Map<String, Float>
+  + premiumCurrency: Float
+}
+
+class City {
+  + id: String
+  + name: String
+  + level: Int
+  + morale: Float
+  + laborTotal: Int
+  + laborIdle: Int
+}
+
+class Building {
+  + type: String
+  + level: Int
+  + effects: Map<String, Float>
+  + upgrade(...)
+}
+
+class ResourceField {
+  + type: String
+  + level: Int
+  + laborAssigned: Int
+  + produceRate(): Float
+}
+
+class Unit {
+  + type: String
+  + tier: Int
+  + stats: Map<String, Float>
+  + status: String
+}
+
+class UnitFactory {
+  + queue: List<BuildTask>
+  + startTraining(...)
+}
+
+class ConversionFacility {
+  + queue: List<ConversionTask>
+  + startConversion(...)
+}
+
+class Officer {
+  + name: String
+  + rarity: Int
+  + stats: Map<String, Float>
+  + skills: List<SkillInstance>
+  + gearSlots: Map<String, Gear>
+}
+
+class Skill {
+  + name: String
+  + type: String
+  + effect: Map<String, Float>
+}
+
+class SkillInstance {
+  + skill: Skill
+  + level: Int
+  + cooldownRemaining: Float
+}
+
+class Gear {
+  + type: String
+  + rarity: Int
+  + statModifiers: Map<String, Float>
+  + level: Int
+}
+
+class Dispatch {
+  + fromCity: City
+  + toCity: City
+  + resources: Map<String, Float>
+  + status: String
+}
+
+class Battle {
+  + attacker: Player
+  + defender: Player
+  + units: List<Unit>
+  + result: String
+  + loot: Map<String, Float>
+}
+
+class Mission {
+  + requirements: Map<String, Any>
+  + rewards: Map<String, Any>
+  + status: String
+}
+
+class SpeedupItem {
+  + timeReduction: Float
+  + applyTo: String
+}
+
+class DispatchTemplate {
+  + resourcePercentages: Map<String, Int>
+  + repeatCount: Int
+}
+
+' Relationships
+Player --> "0..*" City
+City --> "0..*" Building
+City --> "0..*" ResourceField
+City --> "0..1" ConversionFacility
+City --> "0..*" UnitFactory
+City --> "0..*" Unit
+Player --> "0..*" Officer
+Officer --> "0..*" Gear
+Dispatch --> City : from / to
+Battle --> Player : attacker / defender
+Battle --> "0..*" Unit
+SkillInstance --> Skill
+
+@enduml
