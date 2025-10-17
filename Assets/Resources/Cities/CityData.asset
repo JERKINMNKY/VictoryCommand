@@ -1,0 +1,345 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a3eb7cf7c67de640a793d72a6dd8d02, type: 3}
+  m_Name: CityData
+  m_EditorClassIdentifier: Assembly-CSharp::IFC.Data.CityData
+  cityName: Starter City
+  cityLevel: 1
+  maxLevel: 20
+  buildingSlotsUnlockedByLevel: 
+  assignedBuildings: []
+  unlockedCityTiles: 0
+  cityTiles:
+  - tileIndex: 0
+    isUnlocked: 1
+    unlockLevel: 5
+    gridPosition: {x: 0, y: 0}
+    assignedBuilding: {fileID: 11400000, guid: 2616cccdabbdb1a4ea7c29ad4c728ebc, type: 2}
+  - tileIndex: 1
+    isUnlocked: 1
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 0}
+    assignedBuilding: {fileID: 11400000, guid: 960b12a77b740d946b492b5bac0101a1, type: 2}
+  - tileIndex: 2
+    isUnlocked: 1
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 0}
+    assignedBuilding: {fileID: 11400000, guid: 92af07a253413c848ae71aa48b0852fe, type: 2}
+  - tileIndex: 3
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 4
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 5
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 6
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 7
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 8
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 9
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 10
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 11
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 12
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 13
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 14
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 15
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 16
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 17
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 18
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 19
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 20
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 21
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 22
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 23
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 24
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 4}
+    assignedBuilding: {fileID: 0}
+  editorCityGridColumns: 6
+  editorResourceGridColumns: 6
+  editorLastSelectedTile: 13
+  resourceTiles:
+  - tileIndex: 0
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 1
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 2
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 3
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 4
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 5
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 0}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 6
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 7
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 8
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 9
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 10
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 11
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 1}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 12
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 13
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 14
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 15
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 16
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 17
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 2}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 18
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 19
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 20
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 21
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 22
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 23
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 3}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 24
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 4}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 25
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 4}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 26
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 4}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 27
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 4}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 28
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 4}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 29
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 4}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 30
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 5}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 31
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 5}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 32
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 5}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 33
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 3, y: 5}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 34
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 4, y: 5}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 35
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 5, y: 5}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 36
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 0, y: 6}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 37
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 1, y: 6}
+    assignedBuilding: {fileID: 0}
+  - tileIndex: 38
+    isUnlocked: 0
+    unlockLevel: 1
+    gridPosition: {x: 2, y: 6}
+    assignedBuilding: {fileID: 0}

@@ -22,6 +22,31 @@ public class CityTileEditor : EditorWindow
         GetWindow<CityTileEditor>("City Tile Editor");
     }
 
+    void CreateSampleBuildings()
+    {
+        string dir = "Assets/Resources/TestBuildings";
+        if (!AssetDatabase.IsValidFolder(dir))
+        {
+            AssetDatabase.CreateFolder("Assets/Resources", "TestBuildings");
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            var bd = ScriptableObject.CreateInstance<IFC.Data.BuildingData>();
+            bd.name = "SampleBuilding_" + i;
+            // set private fields via SerializedObject
+            var so = new SerializedObject(bd);
+            so.FindProperty("_buildingName").stringValue = bd.name;
+            so.FindProperty("_level").intValue = 1 + i;
+            so.ApplyModifiedProperties();
+
+            string path = System.IO.Path.Combine(dir, bd.name + ".asset");
+            AssetDatabase.CreateAsset(bd, path);
+        }
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
     void OnEnable()
     {
         // safe defaults
@@ -145,21 +170,111 @@ public class CityTileEditor : EditorWindow
             }
         }
 
-        // Assign building to selected tile
+        // Assign building to selected tile (drag & drop friendly via ObjectField)
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Tile Assignment", EditorStyles.boldLabel);
-        EditorGUILayout.LabelField("Selected Tile", selectedTileIndex >= 0 ? selectedTileIndex.ToString() : "None");
-        selectedAssignBuilding = (BuildingData)EditorGUILayout.ObjectField("Assign Building", selectedAssignBuilding, typeof(BuildingData), false);
-        EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Assign to Selected"))
+
+        // prefer persisted selection if available
+        if (cityData != null)
         {
-            AssignToSelected(selectedAssignBuilding);
+            selectedTileIndex = cityData.editorLastSelectedTile;
         }
-        if (GUILayout.Button("Clear Selected"))
+
+        if (selectedTileIndex >= 0 && cityData != null && selectedTileIndex < cityData.cityTiles.Count)
         {
-            ClearSelected();
+            EditorGUILayout.LabelField("Selected Tile", selectedTileIndex.ToString());
+
+            // Drag-and-drop compatible assignment field with immediate validation
+            EditorGUI.BeginChangeCheck();
+            var newAssign = (BuildingData)EditorGUILayout.ObjectField(
+                new GUIContent("Assign Building"),
+                selectedAssignBuilding,
+                typeof(BuildingData),
+                false);
+            if (EditorGUI.EndChangeCheck())
+            {
+                // validate if changed and non-null
+                if (newAssign != selectedAssignBuilding)
+                {
+                    if (newAssign != null && HasValidSelection())
+                    {
+                        int idx = selectedTileIndex;
+                        if (cityData != null && idx >= 0 && idx < cityData.cityTiles.Count)
+                        {
+                            var tile = cityData.cityTiles[idx];
+                            if (!CityManager.CanPlaceBuilding(cityData, tile, newAssign, out string reason))
+                            {
+                                EditorUtility.DisplayDialog("Cannot place building", string.Format("Cannot place {0}: {1}", newAssign.BuildingName, reason), "OK");
+                                // clear field to avoid confusion
+                                selectedAssignBuilding = null;
+                            }
+                            else
+                            {
+                                selectedAssignBuilding = newAssign;
+                            }
+                        }
+                        else
+                        {
+                            selectedAssignBuilding = newAssign;
+                        }
+                    }
+                    else
+                    {
+                        selectedAssignBuilding = newAssign;
+                    }
+                }
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Assign to Selected"))
+            {
+                AssignToSelected(selectedAssignBuilding);
+            }
+            if (GUILayout.Button("Clear Selected"))
+            {
+                ClearSelected();
+            }
+            EditorGUILayout.EndHorizontal();
+            // Diagnostics: show runtime vs serialized assigned building for selected tile
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Diagnostics", EditorStyles.boldLabel);
+            var runtimeAssigned = cityData.cityTiles[selectedTileIndex].assignedBuilding;
+            EditorGUILayout.LabelField("Runtime assigned:", runtimeAssigned != null ? runtimeAssigned.BuildingName : "None");
+
+            // serialized view
+            SerializedObject soLocal = new SerializedObject(cityData);
+            soLocal.Update();
+            SerializedProperty cityTilesPropLocal = soLocal.FindProperty("cityTiles");
+            if (cityTilesPropLocal != null && selectedTileIndex < cityTilesPropLocal.arraySize)
+            {
+                var elemLocal = cityTilesPropLocal.GetArrayElementAtIndex(selectedTileIndex);
+                var assignedPropLocal = elemLocal.FindPropertyRelative("assignedBuilding");
+                var serAssigned = assignedPropLocal != null ? (BuildingData)assignedPropLocal.objectReferenceValue : null;
+                EditorGUILayout.LabelField("Serialized assigned:", serAssigned != null ? serAssigned.BuildingName : "None");
+            }
+            else
+            {
+                EditorGUILayout.LabelField("Serialized assigned:", "(no serialized element)");
+            }
+
+            if (GUILayout.Button("Force Apply Serialized Changes"))
+            {
+                // Re-apply and save
+                soLocal.ApplyModifiedProperties();
+                EditorUtility.SetDirty(cityData);
+                AssetDatabase.SaveAssets();
+            }
+
+            // Quick helper: create sample BuildingData assets if none exist
+            if (GUILayout.Button("Create Sample Buildings (for testing)"))
+            {
+                CreateSampleBuildings();
+            }
         }
-        EditorGUILayout.EndHorizontal();
+        else
+        {
+            EditorGUILayout.HelpBox("No valid tile selected.", MessageType.Warning);
+        }
 
         so.ApplyModifiedProperties();
     }
@@ -582,6 +697,23 @@ public class CityTileEditor : EditorWindow
     void AssignToSelected(BuildingData b)
     {
         if (!HasValidSelection()) return;
+
+        // if assigning a real building, validate first
+        if (b != null)
+        {
+            int idx = selectedTileIndex;
+            // Use the existing tile data for validation
+            if (cityData != null && idx >= 0 && idx < cityData.cityTiles.Count)
+            {
+                var tile = cityData.cityTiles[idx];
+                if (!CityManager.CanPlaceBuilding(cityData, tile, b, out string reason))
+                {
+                    EditorUtility.DisplayDialog("Cannot place building", string.Format("Cannot place {0}: {1}", b.BuildingName, reason), "OK");
+                    return;
+                }
+            }
+        }
+
         DoGrouped("City Editor: Assign Tile", cityData, () =>
         {
             int idx = selectedTileIndex;
