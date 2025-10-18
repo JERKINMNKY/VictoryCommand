@@ -1,0 +1,148 @@
+{
+  "cities": [
+    {
+      "id": "city_alpha",
+      "displayName": "Alpha Base",
+      "morale": 0.92,
+      "wall": {
+        "maxHp": 1500,
+        "currentHp": 1300,
+        "fortificationPoints": 2
+      },
+      "buildQueue": {
+        "baseSlots": 2,
+        "blueprintTokens": 1,
+        "orders": [
+          { "buildingType": "Farm", "targetLevel": 9, "secondsRemaining": 180 },
+          { "buildingType": "Warehouse", "targetLevel": 11, "secondsRemaining": 360 }
+        ]
+      },
+      "resources": [
+        { "resourceType": "Food", "stored": 6200, "capacity": 12000 },
+        { "resourceType": "Steel", "stored": 4200, "capacity": 10000 },
+        { "resourceType": "Oil", "stored": 2800, "capacity": 8000 },
+        { "resourceType": "RareMetal", "stored": 900, "capacity": 4000 }
+      ],
+      "production": [
+        { "resourceType": "Food", "fields": 12, "outputPerField": 24 },
+        { "resourceType": "Steel", "fields": 6, "outputPerField": 18 }
+      ],
+      "trainingQueues": [
+        {
+          "unitType": "Infantry",
+          "quantity": 150,
+          "durationSeconds": 300,
+          "upkeepFoodPerTick": 6,
+          "costs": [
+            { "resourceType": "Food", "amount": 900 },
+            { "resourceType": "Steel", "amount": 300 }
+          ]
+        }
+      ],
+      "transportRoutes": [
+        {
+          "targetCityId": "city_beta",
+          "resourceType": "Food",
+          "amountPerShipment": 400,
+          "intervalSeconds": 180,
+          "secondsUntilNext": 60
+        }
+      ]
+    },
+    {
+      "id": "city_beta",
+      "displayName": "Bravo Refinery",
+      "morale": 0.85,
+      "wall": {
+        "maxHp": 1200,
+        "currentHp": 950,
+        "fortificationPoints": 1
+      },
+      "buildQueue": {
+        "baseSlots": 2,
+        "blueprintTokens": 0,
+        "orders": [
+          { "buildingType": "SteelPlant", "targetLevel": 10, "secondsRemaining": 420 }
+        ]
+      },
+      "resources": [
+        { "resourceType": "Food", "stored": 2100, "capacity": 7000 },
+        { "resourceType": "Steel", "stored": 5400, "capacity": 14000 },
+        { "resourceType": "Oil", "stored": 3900, "capacity": 12000 },
+        { "resourceType": "RareMetal", "stored": 600, "capacity": 5000 }
+      ],
+      "production": [
+        { "resourceType": "Steel", "fields": 14, "outputPerField": 26 },
+        { "resourceType": "Oil", "fields": 8, "outputPerField": 20 }
+      ],
+      "trainingQueues": [
+        {
+          "unitType": "Scout",
+          "quantity": 40,
+          "durationSeconds": 240,
+          "upkeepFoodPerTick": 4,
+          "costs": [
+            { "resourceType": "Oil", "amount": 480 },
+            { "resourceType": "Food", "amount": 320 },
+            { "resourceType": "Steel", "amount": 200 }
+          ]
+        }
+      ],
+      "transportRoutes": [
+        {
+          "targetCityId": "city_gamma",
+          "resourceType": "Steel",
+          "amountPerShipment": 500,
+          "intervalSeconds": 240,
+          "secondsUntilNext": 120
+        }
+      ]
+    },
+    {
+      "id": "city_gamma",
+      "displayName": "Gamma Research",
+      "morale": 0.97,
+      "wall": {
+        "maxHp": 1800,
+        "currentHp": 1700,
+        "fortificationPoints": 3
+      },
+      "buildQueue": {
+        "baseSlots": 3,
+        "blueprintTokens": 2,
+        "orders": []
+      },
+      "resources": [
+        { "resourceType": "Food", "stored": 4800, "capacity": 9000 },
+        { "resourceType": "Steel", "stored": 3300, "capacity": 9000 },
+        { "resourceType": "Oil", "stored": 5100, "capacity": 13000 },
+        { "resourceType": "RareMetal", "stored": 2200, "capacity": 8000 }
+      ],
+      "production": [
+        { "resourceType": "Oil", "fields": 15, "outputPerField": 28 },
+        { "resourceType": "RareMetal", "fields": 6, "outputPerField": 16 }
+      ],
+      "trainingQueues": [
+        {
+          "unitType": "Engineer",
+          "quantity": 20,
+          "durationSeconds": 180,
+          "upkeepFoodPerTick": 3,
+          "costs": [
+            { "resourceType": "Steel", "amount": 260 },
+            { "resourceType": "Food", "amount": 200 }
+          ]
+        }
+      ],
+      "transportRoutes": [
+        {
+          "targetCityId": "city_alpha",
+          "resourceType": "Oil",
+          "amountPerShipment": 350,
+          "intervalSeconds": 300,
+          "secondsUntilNext": 90
+        }
+      ]
+    }
+  ]
+}
