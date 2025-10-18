@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Victory Command Full Game Spec",
+  "type": "object",
+  "properties": {
+    "entities": {
+      "type": "object",
+      "properties": {
+        "Player": { "$ref": "#/definitions/Player" },
+        "City": { "$ref": "#/definitions/City" },
+        "ResourceField": { "$ref": "#/definitions/ResourceField" },
+        "Building": { "$ref": "#/definitions/Building" },
+        "ResearchTech": { "$ref": "#/definitions/ResearchTech" },
+        "ResearchQueue": { "$ref": "#/definitions/ResearchQueue" },
+        "Unit": { "$ref": "#/definitions/Unit" },
+        "UnitFactory": { "$ref": "#/definitions/UnitFactory" },
+        "ConversionFacility": { "$ref": "#/definitions/ConversionFacility" },
+        "Officer": { "$ref": "#/definitions/Officer" },
+        "SkillInstance": { "$ref": "#/definitions/SkillInstance" },
+        "Skill": { "$ref": "#/definitions/Skill" },
+        "Gear": { "$ref": "#/definitions/Gear" },
+        "Dispatch": { "$ref": "#/definitions/Dispatch" },
+        "Battle": { "$ref": "#/definitions/Battle" },
+        "Mission": { "$ref": "#/definitions/Mission" },
+        "SpeedupItem": { "$ref": "#/definitions/SpeedupItem" },
+        "DispatchTemplate": { "$ref": "#/definitions/DispatchTemplate" }
+      }
+    }
+  },
+  "definitions": {
+    "ResourceMap": {
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    },
+    "Player": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "cities": { "type": "array", "items": { "type": "string" } },
+        "officers": { "type": "array", "items": { "type": "string" } },
+        "gearInventory": { "type": "array", "items": { "type": "string" } },
+        "resources": { "$ref": "#/definitions/ResourceMap" },
+        "premiumCurrency": { "type": "number" },
+        "missions": {
+          "type": "object",
+          "properties": {
+            "active": { "type": "array", "items": { "type": "string" } },
+            "completed": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "globalResearch": { "type": "array", "items": { "type": "string" } },
+        "dispatchTemplates": { "type": "array", "items": { "type": "string" } },
+        "allianceId": { "oneOf": [ { "type": "string" }, { "type": "null" } ] }
+      },
+      "required": ["id","username"]
+    },
+    "City": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "coordinates": {
+          "type": "object",
+          "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
+        },
+        "level": { "type": "integer" },
+        "blueprintCap": { "type": "integer" },
+        "specialization": { "type": "string" },
+        "laborTotal": { "type": "integer" },
+        "laborAssigned": { "type": "integer" },
+        "laborIdle": { "type": "integer" },
+        "morale": { "type": "number" },
+        "reputation": { "type": "integer" },
+        "cityState": { "type": "string" },
+        "buildingSlots": { "type": "integer" },
+        "fieldSlots": { "type": "integer" },
+        "buildings": { "type": "array", "items": { "type": "string" } },
+        "resourceFields": { "type": "array", "items": { "type": "string" } },
+        "garrison": { "type": "array", "items": { "type": "string" } },
+        "incomingDispatches": { "type": "array", "items": { "type": "string" } },
+        "outgoingDispatches": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id","name"]
+    },
+    "ResourceField": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "cityId": { "type": "string" },
+        "type": { "type": "string" },
+        "level": { "type": "integer" },
+        "laborAssigned": { "type": "integer" },
+        "isActive": { "type": "boolean" }
+      }
+    },
+    "Building": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "cityId": { "type": "string" },
+        "type": { "type": "string" },
+        "level": { "type": "integer" },
+        "status": { "type": "string" },
+        "upgradeStartTime": { "oneOf": [{"type": "string"}, {"type":"null"}] },
+        "upgradeFinishTime": { "oneOf": [{"type": "string"}, {"type":"null"}] },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "buildingType": { "type": "string" },
+              "minLevel": { "type": "integer" }
+            }
+          }
+        },
+        "blueprintRequired": { "type": "boolean" },
+        "effects": { "type": "object" }
+      },
+      "required": ["id","type"]
+    },
+    "ResearchTech": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "branch": { "type": "string" },
+        "level": { "type": "integer" },
+        "maxLevel": { "type": "integer" },
+        "cost": { "$ref": "#/definitions/ResourceMap" },
+        "timeSeconds": { "type": "number" },
+        "prerequisites": { "type": "array", "items": { "type": "string" } },
+        "effects": { "type": "object" }
+      }
+    },
+    "ResearchQueue": {
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "active": { "type": ["string", "null"] },
+        "queue": { "type": "array", "items": { "type": "string" } },
+        "speedupUsed": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "Unit": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerCityId": { "type": "string" },
+        "type": { "type": "string" },
+        "tier": { "type": "integer" },
+        "baseStats": { "type": "object" },
+        "upkeep": { "$ref": "#/definitions/ResourceMap" },
+        "cost": { "$ref": "#/definitions/ResourceMap" },
+        "buildTime": { "type": "number" },
+        "transformFrom": { "type": "object" },
+        "effectiveAgainst": { "type": "array", "items": { "type": "string" } },
+        "weakAgainst": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string" }
+      }
+    },
+    "UnitFactory": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "cityId": { "type": "string" },
+        "type": { "type": "string" },
+        "queue": { "type": "array", "items": { "type": "object" } },
+        "maxSlots": { "type": "integer" },
+        "speedupsUsed": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ConversionFacility": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "cityId": { "type": "string" },
+        "level": { "type": "integer" },
+        "status": { "type": "string" },
+        "queue": { "type": "array", "items": { "type": "object" } },
+        "requirements": { "$ref": "#/definitions/ResourceMap" }
+      }
+    },
+    "Officer": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "rarity": { "type": "integer" },
+        "level": { "type": "integer" },
+        "experience": { "type": "number" },
+        "stats": { "type": "object" },
+        "skillPoints": { "type": "integer" },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "gearSlots": { "type": "object" },
+        "assignment": { "type": "string" }
+      }
+    },
+    "SkillInstance": { "type": "object" },
+    "Skill": { "type": "object" },
+    "Gear": { "type": "object" },
+    "Dispatch": { "type": "object" },
+    "Battle": { "type": "object" },
+    "Mission": { "type": "object" },
+    "SpeedupItem": { "type": "object" },
+    "DispatchTemplate": { "type": "object" }
+  }
+}

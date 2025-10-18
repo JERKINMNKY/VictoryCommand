@@ -1,0 +1,15 @@
+{
+  "name": "vc-codegen",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "generate:ts": "npx quicktype --lang typescript --src docs/specs/game_spec.full.schema.json -o docs/specs/models.ts --just-types",
+    "generate:csharp": "mkdir -p tmp_gen || true && npx quicktype --lang cs --namespace VictoryCommand.Schema --src docs/specs/game_spec.full.schema.json -o tmp_gen/GameModels.Generated.cs && node postprocess-cs.js tmp_gen/GameModels.Generated.cs ../../Assets/Scripts/Generated/GameModels.Generated.cs",
+    "generate:all": "npm run generate:ts && npm run generate:csharp",
+    "check:gen": "node tools/codegen/check-generated.js"
+  },
+  "devDependencies": {
+    "quicktype-core": "^20.0.0",
+    "fs-extra": "^11.1.1"
+  }
+}
