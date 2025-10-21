@@ -102,6 +102,7 @@
     <Compile Include="Assets\ScriptableObjects\Buildings\CommandTowerData.cs" />
     <Compile Include="Assets\Scripts\Systems\BattleSystem.cs" />
     <Compile Include="Assets\Scripts\Data\BuildingData.cs" />
+    <Compile Include="Assets\Scripts\Systems\Officers\OfficerStatsProvider.cs" />
     <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\LightController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\MilitaryInstituteData.cs" />
   </ItemGroup>

@@ -10,7 +10,8 @@ namespace IFC.Systems
     /// </summary>
     public class BuildQueueSystem : MonoBehaviour
     {
-        private static readonly int[] BlueprintLevels = { 10, 13, 17, 20 };
+        public const string UpgradeTokenId = "UpgradeToken";
+        private const int UpgradeTokenGateLevel = 10;
         private GameState _state;
 
         public void Initialize(GameState state)
@@ -41,20 +42,17 @@ namespace IFC.Systems
                 for (int i = 0; i < activeSlots; i++)
                 {
                     var order = city.buildQueue.activeOrders[i];
-                    if (!IsBlueprintGateSatisfied(city, order))
+                    if (!IsUpgradeGateSatisfied(city, order))
                     {
-                        sb.AppendLine($"  {city.displayName}: Waiting for blueprint for {order.buildingType} Lv{order.targetLevel}");
-                        order.blueprintGateSatisfied = false;
+                        sb.AppendLine($"  {city.displayName}: waiting for UpgradeToken ({order.buildingType} Lv{order.targetLevel})");
                         continue;
                     }
-
-                    order.blueprintGateSatisfied = true;
                     int tickReduction = Mathf.CeilToInt(secondsPerTick * officerBonuses.GetConstructionSpeedMultiplier());
                     order.secondsRemaining = Mathf.Max(0, order.secondsRemaining - tickReduction);
                     if (order.secondsRemaining == 0)
                     {
                         completedThisTick++;
-                        sb.AppendLine($"  {city.displayName}: Completed {order.buildingType} -> Lv{order.targetLevel}");
+                        Debug.Log($"[Build] Done {city.displayName}:{order.buildingType} L{order.targetLevel}");
                         city.buildQueue.activeOrders.RemoveAt(i);
                         i--;
                         activeSlots = Mathf.Min(city.buildQueue.activeOrders.Count, effectiveSlots);
@@ -70,34 +68,28 @@ namespace IFC.Systems
             Debug.Log(sb.ToString());
         }
 
-        private bool IsBlueprintGateSatisfied(CityState city, BuildOrderState order)
+        private bool IsUpgradeGateSatisfied(CityState city, BuildOrderState order)
         {
             if (order.blueprintGateSatisfied)
             {
                 return true;
             }
 
-            bool requiresBlueprint = false;
-            for (int b = 0; b < BlueprintLevels.Length; b++)
-            {
-                if (order.targetLevel >= BlueprintLevels[b])
-                {
-                    requiresBlueprint = true;
-                }
-            }
-
-            if (!requiresBlueprint)
+            if (order.targetLevel < UpgradeTokenGateLevel)
             {
                 return true;
             }
 
-            if (city.buildQueue.blueprintTokens > 0)
+            if (_state?.inventory == null || !_state.inventory.Consume(UpgradeTokenId, 1))
             {
-                city.buildQueue.blueprintTokens -= 1;
-                return true;
+                Debug.Log($"[Build] Gate {city.displayName}:{order.buildingType} L{order.targetLevel} requires {UpgradeTokenId} x1");
+                return false;
             }
 
-            return false;
+            order.blueprintGateSatisfied = true;
+            int fromLevel = Mathf.Max(0, order.targetLevel - 1);
+            Debug.Log($"[Build] Start {city.displayName}:{order.buildingType} L{fromLevel}->{order.targetLevel} (consumed {UpgradeTokenId} x1)");
+            return true;
         }
     }
 }

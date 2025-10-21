@@ -74,6 +74,137 @@ namespace IFC.Systems
         }
     }
 
+    public enum BuildingFunctionType
+    {
+        None,
+        PopulationGrowth,
+        ResourceProduction,
+        TrainingSpeedBuff,
+        ResourceExchange,
+        CapacityBoost
+    }
+
+    [Serializable]
+    public class SeedInventoryItem
+    {
+        public string itemId = "UpgradeToken";
+        public int quantity = 0;
+    }
+
+    [Serializable]
+    public class SeedInventoryConfig
+    {
+        public List<SeedInventoryItem> items = new List<SeedInventoryItem>();
+    }
+
+    [Serializable]
+    public class InventoryItemState
+    {
+        public string itemId = string.Empty;
+        public int quantity = 0;
+    }
+
+    [Serializable]
+    public class InventoryState
+    {
+        public List<InventoryItemState> items = new List<InventoryItemState>();
+
+        public int GetQuantity(string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId))
+            {
+                return 0;
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].itemId == itemId)
+                {
+                    return items[i].quantity;
+                }
+            }
+
+            return 0;
+        }
+
+        public bool Consume(string itemId, int amount)
+        {
+            if (string.IsNullOrEmpty(itemId) || amount <= 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].itemId == itemId)
+                {
+                    if (items[i].quantity < amount)
+                    {
+                        return false;
+                    }
+
+                    items[i].quantity -= amount;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void Add(string itemId, int amount)
+        {
+            if (string.IsNullOrEmpty(itemId) || amount == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].itemId == itemId)
+                {
+                    items[i].quantity = Mathf.Max(0, items[i].quantity + amount);
+                    return;
+                }
+            }
+
+            items.Add(new InventoryItemState
+            {
+                itemId = itemId,
+                quantity = Mathf.Max(0, amount)
+            });
+        }
+    }
+
+    [Serializable]
+    public class SeedBuildingFunctionConfig
+    {
+        public string buildingId = string.Empty;
+        public string buildingType = string.Empty;
+        public BuildingFunctionType functionType = BuildingFunctionType.None;
+        public int level = 1;
+        public float amountPerTick = 0f;
+        public ResourceType resourceType = ResourceType.Food;
+        public ResourceType targetResource = ResourceType.Steel;
+        public float exchangeRate = 1f;
+        public string facilityId = string.Empty;
+        public float trainingMultiplier = 1f;
+    }
+
+    [Serializable]
+    public class BuildingFunctionState
+    {
+        public string buildingId = string.Empty;
+        public string buildingType = string.Empty;
+        public BuildingFunctionType functionType = BuildingFunctionType.None;
+        public int level = 1;
+        public float amountPerTick = 0f;
+        public ResourceType resourceType = ResourceType.Food;
+        public ResourceType targetResource = ResourceType.Steel;
+        public float exchangeRate = 1f;
+        public string facilityId = string.Empty;
+        public float trainingMultiplier = 1f;
+    }
+
     [Serializable]
     public class SeedGameConfig
     {
@@ -81,6 +212,7 @@ namespace IFC.Systems
         public SeedWorldConfig world = new SeedWorldConfig();
         public SeedMissionConfig missions = new SeedMissionConfig();
         public List<SeedBattleRequest> pendingBattles = new List<SeedBattleRequest>();
+        public SeedInventoryConfig inventory = new SeedInventoryConfig();
     }
 
     [Serializable]
@@ -90,6 +222,7 @@ namespace IFC.Systems
         public string mayorId = string.Empty;
         public string displayName = "New City";
         public float morale = 1f;
+        public int population = 0;
         public SeedWallConfig wall = new SeedWallConfig();
         public SeedBuildQueueConfig buildQueue = new SeedBuildQueueConfig();
         public List<SeedResourceStockpile> resources = new List<SeedResourceStockpile>();
@@ -97,6 +230,7 @@ namespace IFC.Systems
         public List<SeedTrainingQueueConfig> trainingQueues = new List<SeedTrainingQueueConfig>();
         public List<SeedTransportRouteConfig> transportRoutes = new List<SeedTransportRouteConfig>();
         public List<SeedOfficerAssignment> officers = new List<SeedOfficerAssignment>();
+        public List<SeedBuildingFunctionConfig> buildingFunctions = new List<SeedBuildingFunctionConfig>();
     }
 
     [Serializable]
@@ -222,6 +356,7 @@ namespace IFC.Systems
         public WorldState world = new WorldState();
         public MissionTrackerState missions = new MissionTrackerState();
         public BattleQueueState battleQueue = new BattleQueueState();
+        public InventoryState inventory = new InventoryState();
 
         public CityState GetCityById(string cityId)
         {
@@ -245,6 +380,7 @@ namespace IFC.Systems
         public string mayorOfficerId = string.Empty;
         public string displayName = string.Empty;
         public float morale = 1f;
+        public int population = 0;
         public WallState wall = new WallState();
         public BuildQueueState buildQueue = new BuildQueueState();
         public List<ResourceStockpile> stockpiles = new List<ResourceStockpile>();
@@ -254,6 +390,7 @@ namespace IFC.Systems
         public List<GarrisonUnit> garrison = new List<GarrisonUnit>();
         public List<OfficerAssignment> officers = new List<OfficerAssignment>();
         public OfficerBonusState officerBonuses = new OfficerBonusState();
+        public List<BuildingFunctionState> buildingFunctions = new List<BuildingFunctionState>();
     }
 
     [Serializable]
@@ -417,6 +554,7 @@ namespace IFC.Systems
                         blueprintTokens = Mathf.Max(0, citySeed.buildQueue.blueprintTokens)
                     }
                 };
+                cityState.population = Mathf.Max(0, citySeed.population);
 
                 for (int r = 0; r < citySeed.resources.Count; r++)
                 {
@@ -515,12 +653,19 @@ namespace IFC.Systems
                     ApplyOfficerAssignment(cityState.officerBonuses, assignmentSeed);
                 }
 
+                for (int bf = 0; bf < citySeed.buildingFunctions.Count; bf++)
+                {
+                    var functionSeed = citySeed.buildingFunctions[bf];
+                    cityState.buildingFunctions.Add(BuildBuildingFunctionState(functionSeed));
+                }
+
                 state.cities.Add(cityState);
             }
 
             state.world = BuildWorldState(seed.world);
             state.missions = BuildMissionTracker(seed.missions);
             state.battleQueue = BuildBattleQueue(seed.pendingBattles);
+            state.inventory = BuildInventoryState(seed.inventory);
 
             return state;
         }
@@ -649,6 +794,50 @@ namespace IFC.Systems
             }
 
             return queue;
+        }
+
+        private static InventoryState BuildInventoryState(SeedInventoryConfig seedInventory)
+        {
+            var inventory = new InventoryState();
+            if (seedInventory == null)
+            {
+                return inventory;
+            }
+
+            for (int i = 0; i < seedInventory.items.Count; i++)
+            {
+                var item = seedInventory.items[i];
+                if (string.IsNullOrEmpty(item.itemId) || item.quantity <= 0)
+                {
+                    continue;
+                }
+
+                inventory.Add(item.itemId, item.quantity);
+            }
+
+            return inventory;
+        }
+
+        private static BuildingFunctionState BuildBuildingFunctionState(SeedBuildingFunctionConfig config)
+        {
+            if (config == null)
+            {
+                return new BuildingFunctionState();
+            }
+
+            return new BuildingFunctionState
+            {
+                buildingId = config.buildingId,
+                buildingType = config.buildingType,
+                functionType = config.functionType,
+                level = Mathf.Max(1, config.level),
+                amountPerTick = config.amountPerTick,
+                resourceType = config.resourceType,
+                targetResource = config.targetResource,
+                exchangeRate = config.exchangeRate,
+                facilityId = config.facilityId,
+                trainingMultiplier = Mathf.Clamp(config.trainingMultiplier <= 0f ? 1f : config.trainingMultiplier, 0.1f, 5f)
+            };
         }
 
         private static void ApplyOfficerAssignment(OfficerBonusState target, SeedOfficerAssignment assignment)

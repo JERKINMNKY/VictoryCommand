@@ -29,11 +29,6 @@ namespace IFC.Systems.Officers
                 facilityIds.Add(queue.facilityId);
             }
 
-            foreach (var facilityId in facilityIds)
-            {
-                registry.SetMultiplier(facilityId, TrainingTimeMultiplierKey, 1f);
-            }
-
             if (assignments == null)
             {
                 return;
@@ -46,10 +41,13 @@ namespace IFC.Systems.Officers
                     continue;
                 }
 
-                if (facilityIds.Count == 0 || facilityIds.Contains(facilityId))
+                if (facilityIds.Count > 0 && !facilityIds.Contains(facilityId))
                 {
-                    registry.SetMultiplier(facilityId, TrainingTimeMultiplierKey, AssignedTrainingMultiplier);
+                    continue;
                 }
+
+                float current = registry.GetMultiplierOrDefault(facilityId, TrainingTimeMultiplierKey, 1f);
+                registry.SetMultiplier(facilityId, TrainingTimeMultiplierKey, current * AssignedTrainingMultiplier);
             }
         }
     }

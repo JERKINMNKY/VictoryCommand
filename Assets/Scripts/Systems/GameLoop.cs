@@ -26,6 +26,7 @@ namespace IFC.Systems
         private MapSystem _mapSystem;
         private MissionSystem _missionSystem;
         private BattleSystem _battleSystem;
+        private BuildingFunctionSystem _buildingFunctionSystem;
         private StatModifierRegistry _statModifiers;
         private readonly Dictionary<string, OfficerAssignmentView> _officerAssignmentViews = new Dictionary<string, OfficerAssignmentView>();
         private IOfficerStatsProvider _officerStatsProvider;
@@ -42,6 +43,7 @@ namespace IFC.Systems
             _mapSystem = GetOrCreate<MapSystem>();
             _missionSystem = GetOrCreate<MissionSystem>();
             _battleSystem = GetOrCreate<BattleSystem>();
+            _buildingFunctionSystem = GetOrCreate<BuildingFunctionSystem>();
 
             LoadSeed();
         }
@@ -72,6 +74,8 @@ namespace IFC.Systems
             Debug.Log("=== Victory Command Prototype Tick ===");
             _buildQueueSystem.ProcessTick(secondsPerTick);
             _resourceSystem.ProcessTick(secondsPerTick);
+            ResetStatModifiers();
+            _buildingFunctionSystem.ProcessTick(secondsPerTick);
             ApplyOfficerBuffs();
             _trainingSystem.ProcessTick(secondsPerTick);
             _defenseSystem.ProcessTick(secondsPerTick);
@@ -97,6 +101,7 @@ namespace IFC.Systems
             _statModifiers = new StatModifierRegistry();
             BuildOfficerAssignmentViews();
             _trainingSystem.Initialize(_state, _statModifiers);
+            _buildingFunctionSystem.Initialize(_state, _statModifiers);
             _autoTransportSystem.Initialize(_state);
             _defenseSystem.Initialize(_state);
             _mapSystem.Initialize(_state);
@@ -169,13 +174,17 @@ namespace IFC.Systems
                 return;
             }
 
-            _statModifiers.Clear();
             for (int i = 0; i < _state.cities.Count; i++)
             {
                 var city = _state.cities[i];
                 _officerAssignmentViews.TryGetValue(city.cityId, out var view);
                 OfficerBuffPass.Apply(city, view, _statModifiers);
             }
+        }
+
+        private void ResetStatModifiers()
+        {
+            _statModifiers?.Clear();
         }
 
         private void EnsureOfficerStatsProvider()

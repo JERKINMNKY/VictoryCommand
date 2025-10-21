@@ -5,6 +5,7 @@
       "mayorId": "officer_alpha_mayor",
       "displayName": "Alpha Base",
       "morale": 0.92,
+      "population": 1850,
       "wall": {
         "maxHp": 1500,
         "currentHp": 1300,
@@ -71,6 +72,12 @@
           "constructionSpeedBonus": 0.1,
           "facilityIds": ["city_alpha_barracks"]
         }
+      ],
+      "buildingFunctions": [
+        { "buildingId": "city_alpha_house", "buildingType": "House", "functionType": "PopulationGrowth", "level": 3, "amountPerTick": 4 },
+        { "buildingId": "city_alpha_steelplant", "buildingType": "SteelPlant", "functionType": "ResourceProduction", "level": 11, "amountPerTick": 120, "resourceType": "Steel" },
+        { "buildingId": "city_alpha_market", "buildingType": "Market", "functionType": "ResourceExchange", "level": 2, "amountPerTick": 200, "resourceType": "Food", "targetResource": "Oil", "exchangeRate": 0.5 },
+        { "buildingId": "city_alpha_barracks", "buildingType": "Barracks", "functionType": "TrainingSpeedBuff", "level": 5, "trainingMultiplier": 0.9, "facilityId": "city_alpha_barracks" }
       ]
     },
     {
@@ -78,6 +85,7 @@
       "mayorId": "officer_beta_mayor",
       "displayName": "Bravo Refinery",
       "morale": 0.85,
+      "population": 1420,
       "wall": {
         "maxHp": 1200,
         "currentHp": 950,
@@ -137,6 +145,11 @@
           "productionBonus": 0.05,
           "facilityIds": ["city_beta_barracks"]
         }
+      ],
+      "buildingFunctions": [
+        { "buildingId": "city_beta_house", "buildingType": "House", "functionType": "PopulationGrowth", "level": 2, "amountPerTick": 3 },
+        { "buildingId": "city_beta_market", "buildingType": "Market", "functionType": "ResourceExchange", "level": 1, "amountPerTick": 150, "resourceType": "Steel", "targetResource": "RareMetal", "exchangeRate": 0.25 },
+        { "buildingId": "city_beta_barracks", "buildingType": "Barracks", "functionType": "TrainingSpeedBuff", "level": 4, "trainingMultiplier": 0.85, "facilityId": "city_beta_barracks" }
       ]
     },
     {
@@ -144,6 +157,7 @@
       "mayorId": "officer_gamma_mayor",
       "displayName": "Gamma Research",
       "morale": 0.97,
+      "population": 2010,
       "wall": {
         "maxHp": 1800,
         "currentHp": 1700,
@@ -205,6 +219,11 @@
           "constructionSpeedBonus": 0.15,
           "facilityIds": ["city_gamma_workshop"]
         }
+      ],
+      "buildingFunctions": [
+        { "buildingId": "city_gamma_house", "buildingType": "House", "functionType": "PopulationGrowth", "level": 4, "amountPerTick": 5 },
+        { "buildingId": "city_gamma_power", "buildingType": "PowerPlant", "functionType": "ResourceProduction", "level": 6, "amountPerTick": 80, "resourceType": "Oil" },
+        { "buildingId": "city_gamma_workshop", "buildingType": "Workshop", "functionType": "TrainingSpeedBuff", "level": 3, "trainingMultiplier": 0.88, "facilityId": "city_gamma_workshop" }
       ]
     }
   ],
@@ -230,5 +249,10 @@
   "pendingBattles": [
     { "battleId": "battle_001", "attackerCityId": "city_beta", "defenderCityId": "city_gamma", "secondsUntilResolution": 180 },
     { "battleId": "battle_002", "attackerCityId": "city_alpha", "defenderCityId": "territory_unclaimed_outpost", "secondsUntilResolution": 120 }
-  ]
+  ],
+  "inventory": {
+    "items": [
+      { "itemId": "UpgradeToken", "quantity": 3 }
+    ]
+  }
 }
