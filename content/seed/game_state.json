@@ -2,6 +2,7 @@
   "cities": [
     {
       "id": "city_alpha",
+      "mayorId": "officer_alpha_mayor",
       "displayName": "Alpha Base",
       "morale": 0.92,
       "wall": {
@@ -36,7 +37,8 @@
           "costs": [
             { "resourceType": "Food", "amount": 900 },
             { "resourceType": "Steel", "amount": 300 }
-          ]
+          ],
+          "facilityId": "city_alpha_barracks"
         }
       ],
       "transportRoutes": [
@@ -61,11 +63,19 @@
           "officerId": "officer_alpha_defense",
           "defenseRepairBonus": 0.3,
           "moraleDamageReduction": 0.2
+        },
+        {
+          "role": "Logistics",
+          "officerId": "officer_alpha_logistics",
+          "productionBonus": 0.05,
+          "constructionSpeedBonus": 0.1,
+          "facilityIds": ["city_alpha_barracks"]
         }
       ]
     },
     {
       "id": "city_beta",
+      "mayorId": "officer_beta_mayor",
       "displayName": "Bravo Refinery",
       "morale": 0.85,
       "wall": {
@@ -100,7 +110,8 @@
             { "resourceType": "Oil", "amount": 480 },
             { "resourceType": "Food", "amount": 320 },
             { "resourceType": "Steel", "amount": 200 }
-          ]
+          ],
+          "facilityId": "city_beta_barracks"
         }
       ],
       "transportRoutes": [
@@ -123,12 +134,14 @@
           "role": "Logistics",
           "officerId": "officer_beta_logistics",
           "moraleBonus": 0.02,
-          "productionBonus": 0.05
+          "productionBonus": 0.05,
+          "facilityIds": ["city_beta_barracks"]
         }
       ]
     },
     {
       "id": "city_gamma",
+      "mayorId": "officer_gamma_mayor",
       "displayName": "Gamma Research",
       "morale": 0.97,
       "wall": {
@@ -160,7 +173,8 @@
           "costs": [
             { "resourceType": "Steel", "amount": 260 },
             { "resourceType": "Food", "amount": 200 }
-          ]
+          ],
+          "facilityId": "city_gamma_workshop"
         }
       ],
       "transportRoutes": [
@@ -188,7 +202,8 @@
         {
           "role": "Logistics",
           "officerId": "officer_gamma_logistics",
-          "constructionSpeedBonus": 0.15
+          "constructionSpeedBonus": 0.15,
+          "facilityIds": ["city_gamma_workshop"]
         }
       ]
     }

@@ -24,6 +24,7 @@ namespace IFC.Systems
         public float constructionSpeedBonus = 0f;
         public float defenseRepairBonus = 0f;
         public float moraleDamageReduction = 0f;
+        public List<string> facilityIds = new List<string>();
     }
 
     [Serializable]
@@ -31,6 +32,7 @@ namespace IFC.Systems
     {
         public OfficerRole role = OfficerRole.Mayor;
         public string officerId = string.Empty;
+        public List<string> facilityIds = new List<string>();
     }
 
     [Serializable]
@@ -85,6 +87,7 @@ namespace IFC.Systems
     public class SeedCityConfig
     {
         public string id = "city";
+        public string mayorId = string.Empty;
         public string displayName = "New City";
         public float morale = 1f;
         public SeedWallConfig wall = new SeedWallConfig();
@@ -144,6 +147,7 @@ namespace IFC.Systems
         public int durationSeconds = 0;
         public List<TrainingCost> costs = new List<TrainingCost>();
         public int upkeepFoodPerTick = 0;
+        public string facilityId = string.Empty;
     }
 
     [Serializable]
@@ -238,6 +242,7 @@ namespace IFC.Systems
     public class CityState
     {
         public string cityId = string.Empty;
+        public string mayorOfficerId = string.Empty;
         public string displayName = string.Empty;
         public float morale = 1f;
         public WallState wall = new WallState();
@@ -294,6 +299,7 @@ namespace IFC.Systems
         public int upkeepFoodPerTick = 0;
         public List<TrainingCost> costs = new List<TrainingCost>();
         public bool resourcesCommitted = false;
+        public string facilityId = string.Empty;
     }
 
     [Serializable]
@@ -396,6 +402,7 @@ namespace IFC.Systems
                 var cityState = new CityState
                 {
                     cityId = citySeed.id,
+                    mayorOfficerId = citySeed.mayorId,
                     displayName = citySeed.displayName,
                     morale = Mathf.Clamp01(citySeed.morale),
                     wall = new WallState
@@ -454,7 +461,8 @@ namespace IFC.Systems
                         quantity = Mathf.Max(0, queueSeed.quantity),
                         durationSeconds = Mathf.Max(1, queueSeed.durationSeconds),
                         secondsRemaining = Mathf.Max(1, queueSeed.durationSeconds),
-                        upkeepFoodPerTick = Mathf.Max(0, queueSeed.upkeepFoodPerTick)
+                        upkeepFoodPerTick = Mathf.Max(0, queueSeed.upkeepFoodPerTick),
+                        facilityId = queueSeed.facilityId ?? string.Empty
                     };
                     for (int c = 0; c < queueSeed.costs.Count; c++)
                     {
@@ -485,11 +493,25 @@ namespace IFC.Systems
                 for (int o = 0; o < citySeed.officers.Count; o++)
                 {
                     var assignmentSeed = citySeed.officers[o];
-                    cityState.officers.Add(new OfficerAssignment
+                    var officerAssignment = new OfficerAssignment
                     {
                         role = assignmentSeed.role,
                         officerId = assignmentSeed.officerId
-                    });
+                    };
+
+                    if (assignmentSeed.facilityIds != null)
+                    {
+                        for (int f = 0; f < assignmentSeed.facilityIds.Count; f++)
+                        {
+                            var facilityId = assignmentSeed.facilityIds[f];
+                            if (!string.IsNullOrEmpty(facilityId))
+                            {
+                                officerAssignment.facilityIds.Add(facilityId);
+                            }
+                        }
+                    }
+
+                    cityState.officers.Add(officerAssignment);
                     ApplyOfficerAssignment(cityState.officerBonuses, assignmentSeed);
                 }
 

@@ -48,58 +48,73 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Systems\AutoTransportSystem.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\GeneralHQData.cs" />
+    <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\InteriorControllerInspector.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\MarketData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\WallData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\SteelPlantData.cs" />
     <Compile Include="Assets\Scripts\Data\CityData.cs" />
+    <Compile Include="Assets\Scripts\Prototypes\GameModels.cs" />
     <Compile Include="Assets\Scripts\Data\CityConstants.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\VehicleFactoryData.cs" />
-    <Compile Include="Assets\vrbn_studios\2023_A\scripts\CameraFacingBillboard.cs" />
+    <Compile Include="Assets\Scripts\Systems\StatModifierRegistry.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\FarmData.cs" />
-    <Compile Include="Assets\vrbn_studios\2023_A\scripts\DirtControllerInspector.cs" />
-    <Compile Include="Assets\vrbn_studios\2023_A\scripts\LightController.cs" />
+    <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\InteriorController.cs" />
+    <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\CameraFacingBillboard.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\NavalYardData.cs" />
-    <Compile Include="Assets\FreeOpenBuilding_1.1.2\FOB_1\Scripts\DoorMech.cs" />
-    <Compile Include="Assets\FreeOpenBuilding_1.1.2\FOB_1\Scripts\DrawerMech.cs" />
+    <Compile Include="Assets\Scripts\Systems\MissionSystem.cs" />
+    <Compile Include="Assets\ThirdParty\FreeOpenBuilding_1.1.2\FOB_1\Scripts\DrawerMech.cs" />
+    <Compile Include="Assets\Scripts\Systems\SaveGameManager.cs" />
+    <Compile Include="Assets\Scripts\Systems\Officers\OfficerBuffPass.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\WarehouseData.cs" />
+    <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\DirtControllerInspector.cs" />
+    <Compile Include="Assets\Scripts\Systems\GameLoop.cs" />
+    <Compile Include="Assets\Scripts\Systems\MapSystem.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\BarracksData.cs" />
+    <Compile Include="Assets\Scripts\Systems\BuildQueueSystem.cs" />
+    <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\DirtController.cs" />
     <Compile Include="Assets\Scripts\CitySystem\CityManager.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\RareMetalMineData.cs" />
-    <Compile Include="Assets\vrbn_studios\2023_A\scripts\InteriorControllerInspector.cs" />
     <Compile Include="Assets\Scripts\Data\OfficerData.cs" />
     <Compile Include="Assets\Scripts\Data\ResourceCost.cs" />
+    <Compile Include="Assets\Scripts\Systems\DefenseSystem.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\UltraConverterData.cs" />
+    <Compile Include="Assets\Scripts\Systems\FoundationState.cs" />
+    <Compile Include="Assets\ThirdParty\FreeOpenBuilding_1.1.2\FOB_1\Scripts\DoorMech.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\HospitalData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\OilFieldData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ArmsPlantData.cs" />
+    <Compile Include="Assets\Scripts\Systems\Officers\OfficerAssignmentView.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\AcademyData.cs" />
-    <Compile Include="Assets\vrbn_studios\2023_A\scripts\EmissionController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\DockyardData.cs" />
     <Compile Include="Assets\Scripts\Systems\ResourceTickService.cs" />
+    <Compile Include="Assets\Scripts\Systems\ResourceSystem.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\AirportData.cs" />
-    <Compile Include="Assets\_Assets_BACKUP\Scripts\Data\CityLevelData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\HouseData.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Building.cs" />
+    <Compile Include="Assets\Scripts\Systems\TrainingSystem.cs" />
+    <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\EmissionController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ResearchCenterData.cs" />
-    <Compile Include="Assets\vrbn_studios\2023_A\scripts\DirtController.cs" />
+    <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\EmissionControllerInspector.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\StaffHQData.cs" />
-    <Compile Include="Assets\vrbn_studios\2023_A\scripts\EmissionControllerInspector.cs" />
+    <Compile Include="Assets\Scripts\Generated\GameModels.Generated.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\CommandTowerData.cs" />
+    <Compile Include="Assets\Scripts\Systems\BattleSystem.cs" />
     <Compile Include="Assets\Scripts\Data\BuildingData.cs" />
-    <Compile Include="Assets\vrbn_studios\2023_A\scripts\InteriorController.cs" />
+    <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\LightController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\MilitaryInstituteData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\vrbn_studios\2023_A\Scenes\Readme.txt" />
-    <None Include="Assets\FreeOpenBuilding_1.1.2\FOB_Props\Material\UseMaterialFromBuildingFolder.txt" />
-    <None Include="Assets\vrbn_studios\2023_A\shader\customFunctionShader\customTangent.hlsl" />
-    <None Include="Assets\vrbn_studios\2023_A\shader\vrbnInteriorMappingURP.shader" />
-    <None Include="Assets\vrbn_studios\2023_A\shader\customFunctionShader\MidPlaneVrbnTransformUVs.hlsl" />
-    <None Include="Assets\FreeOpenBuilding_1.1.2\Important Info!.txt" />
-    <None Include="Assets\FreeOpenBuilding_1.1.2\FOB_Props\Texture\UseTextureFromBuildingFolder.txt" />
-    <None Include="Assets\vrbn_studios\2023_A\shader\customFunctionShader\raycastingTangent.hlsl" />
-    <None Include="Assets\vrbn_studios\2023_A\shader\customFunctionShader\VrbnTransformUVs.hlsl" />
+    <None Include="Assets\ThirdParty\vrbn_studios\2023_A\Scenes\Readme.txt" />
+    <None Include="Assets\ThirdParty\FreeOpenBuilding_1.1.2\FOB_Props\Material\UseMaterialFromBuildingFolder.txt" />
+    <None Include="Assets\ThirdParty\vrbn_studios\2023_A\shader\customFunctionShader\customTangent.hlsl" />
+    <None Include="Assets\ThirdParty\vrbn_studios\2023_A\shader\vrbnInteriorMappingURP.shader" />
+    <None Include="Assets\ThirdParty\vrbn_studios\2023_A\shader\customFunctionShader\MidPlaneVrbnTransformUVs.hlsl" />
+    <None Include="Assets\ThirdParty\FreeOpenBuilding_1.1.2\Important Info!.txt" />
+    <None Include="Assets\ThirdParty\FreeOpenBuilding_1.1.2\FOB_Props\Texture\UseTextureFromBuildingFolder.txt" />
+    <None Include="Assets\ThirdParty\vrbn_studios\2023_A\shader\customFunctionShader\raycastingTangent.hlsl" />
+    <None Include="Assets\ThirdParty\vrbn_studios\2023_A\shader\customFunctionShader\VrbnTransformUVs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -604,6 +619,10 @@
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
       <HintPath>Library\PackageCache\com.unity.visualscripting@6279e2b7c485\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@eebc3d041427\Runtime\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Cecil">

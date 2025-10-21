@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using IFC.Data;
+using IFC.Systems.Officers;
 
 // Layer: Core Simulation
 // Life Domain: Autonomy & Logistics
@@ -23,6 +26,9 @@ namespace IFC.Systems
         private MapSystem _mapSystem;
         private MissionSystem _missionSystem;
         private BattleSystem _battleSystem;
+        private StatModifierRegistry _statModifiers;
+        private readonly Dictionary<string, OfficerAssignmentView> _officerAssignmentViews = new Dictionary<string, OfficerAssignmentView>();
+        private IOfficerStatsProvider _officerStatsProvider;
 
         public GameState CurrentState => _state;
 
@@ -66,6 +72,7 @@ namespace IFC.Systems
             Debug.Log("=== Victory Command Prototype Tick ===");
             _buildQueueSystem.ProcessTick(secondsPerTick);
             _resourceSystem.ProcessTick(secondsPerTick);
+            ApplyOfficerBuffs();
             _trainingSystem.ProcessTick(secondsPerTick);
             _defenseSystem.ProcessTick(secondsPerTick);
             _autoTransportSystem.ProcessTick(secondsPerTick);
@@ -84,8 +91,12 @@ namespace IFC.Systems
             }
 
             _resourceSystem.Initialize(_state);
+            EnsureOfficerStatsProvider();
+            _resourceSystem.SetOfficerStatsProvider(_officerStatsProvider);
             _buildQueueSystem.Initialize(_state);
-            _trainingSystem.Initialize(_state);
+            _statModifiers = new StatModifierRegistry();
+            BuildOfficerAssignmentViews();
+            _trainingSystem.Initialize(_state, _statModifiers);
             _autoTransportSystem.Initialize(_state);
             _defenseSystem.Initialize(_state);
             _mapSystem.Initialize(_state);
@@ -120,6 +131,67 @@ namespace IFC.Systems
             var seed = JsonUtility.FromJson<SeedGameConfig>(json);
             var state = GameStateBuilder.FromSeed(seed);
             SetGameState(state, $"seed:{seedPath}");
+        }
+
+        private void BuildOfficerAssignmentViews()
+        {
+            _officerAssignmentViews.Clear();
+            for (int i = 0; i < _state.cities.Count; i++)
+            {
+                var city = _state.cities[i];
+                var view = new OfficerAssignmentView();
+                if (city.officers != null)
+                {
+                    for (int o = 0; o < city.officers.Count; o++)
+                    {
+                        var assignment = city.officers[o];
+                        if (assignment.role != OfficerRole.Logistics || assignment.facilityIds == null)
+                        {
+                            continue;
+                        }
+
+                        for (int f = 0; f < assignment.facilityIds.Count; f++)
+                        {
+                            var facilityId = assignment.facilityIds[f];
+                            view.SetAssigned(facilityId, true);
+                        }
+                    }
+                }
+
+                _officerAssignmentViews[city.cityId] = view;
+            }
+        }
+
+        private void ApplyOfficerBuffs()
+        {
+            if (_state == null || _statModifiers == null)
+            {
+                return;
+            }
+
+            _statModifiers.Clear();
+            for (int i = 0; i < _state.cities.Count; i++)
+            {
+                var city = _state.cities[i];
+                _officerAssignmentViews.TryGetValue(city.cityId, out var view);
+                OfficerBuffPass.Apply(city, view, _statModifiers);
+            }
+        }
+
+        private void EnsureOfficerStatsProvider()
+        {
+            if (_officerStatsProvider != null)
+            {
+                return;
+            }
+
+            OfficerData[] officers = Resources.LoadAll<OfficerData>("Officers");
+            if (officers == null || officers.Length == 0)
+            {
+                officers = Resources.LoadAll<OfficerData>(string.Empty);
+            }
+
+            _officerStatsProvider = new OfficerStatsProvider(officers);
         }
     }
 }

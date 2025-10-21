@@ -1,5 +1,6 @@
 using System.Text;
 using UnityEngine;
+using IFC.Systems.Officers;
 
 // Layer: Core Simulation
 // Life Domain: Security & Defense
@@ -11,10 +12,13 @@ namespace IFC.Systems
     public class TrainingSystem : MonoBehaviour
     {
         private GameState _state;
+        private StatModifierRegistry _statModifiers;
+        private const string TrainingMultiplierKey = OfficerBuffPass.TrainingTimeMultiplierKey;
 
-        public void Initialize(GameState state)
+        public void Initialize(GameState state, StatModifierRegistry statModifiers)
         {
             _state = state;
+            _statModifiers = statModifiers;
         }
 
         public void ProcessTick(int secondsPerTick)
@@ -44,7 +48,9 @@ namespace IFC.Systems
                         if (TryConsumeResources(city, queue))
                         {
                             queue.resourcesCommitted = true;
-                            queue.secondsRemaining = Mathf.Max(1, queue.durationSeconds);
+                            int baseDuration = Mathf.Max(1, queue.durationSeconds);
+                            int adjustedDuration = CalculateAdjustedDuration(queue, baseDuration);
+                            queue.secondsRemaining = Mathf.Max(1, adjustedDuration);
                             sb.AppendLine($"  {city.displayName}: Began training {queue.quantity} {queue.unitType}");
                         }
                         else
@@ -106,6 +112,26 @@ namespace IFC.Systems
             }
 
             stockpile.amount = Mathf.Max(0, stockpile.amount - queue.upkeepFoodPerTick);
+        }
+
+        private int CalculateAdjustedDuration(TrainingQueueState queue, int baseDuration)
+        {
+            if (_statModifiers == null)
+            {
+                return baseDuration;
+            }
+
+            string facilityId = queue.facilityId;
+            float multiplier = _statModifiers.GetMultiplierOrDefault(facilityId, TrainingMultiplierKey, 1f);
+            multiplier = Mathf.Clamp(multiplier, 0.1f, 10f);
+            int adjusted = Mathf.Max(1, Mathf.RoundToInt(baseDuration * multiplier));
+
+            if (!Mathf.Approximately(multiplier, 1f))
+            {
+                Debug.Log($"[TrainingSystem] Facility={facilityId} unit={queue.unitType} base={baseDuration} adjusted={adjusted} (multiplier={multiplier:0.00})");
+            }
+
+            return adjusted;
         }
     }
 }

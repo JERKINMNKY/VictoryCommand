@@ -1,5 +1,6 @@
 using System.Text;
 using UnityEngine;
+using IFC.Systems.Officers;
 
 // Layer: Core Simulation
 // Life Domain: Autonomy & Logistics
@@ -13,12 +14,24 @@ namespace IFC.Systems
         public float moralePenaltyThreshold = 0.9f;
         public float minimumMoraleFactor = 0.35f;
         public float maximumMoraleFactor = 1.25f;
+        [SerializeField]
+        private AnimationCurve politicsToProduction = new AnimationCurve(
+            new Keyframe(0f, 0.85f),
+            new Keyframe(5f, 1f),
+            new Keyframe(10f, 1.15f),
+            new Keyframe(20f, 2f));
 
         private GameState _state;
+        private IOfficerStatsProvider _officerStatsProvider;
 
         public void Initialize(GameState state)
         {
             _state = state;
+        }
+
+        public void SetOfficerStatsProvider(IOfficerStatsProvider provider)
+        {
+            _officerStatsProvider = provider;
         }
 
         public void ProcessTick(int secondsPerTick)
@@ -39,17 +52,10 @@ namespace IFC.Systems
                 float effectiveMorale = Mathf.Clamp(city.morale + officerBonuses.moraleBonus, 0f, 1.5f);
                 float moraleFactor = CalculateMoraleFactor(effectiveMorale);
                 float productionMultiplier = officerBonuses.GetProductionMultiplier();
-                float effectiveFactor = 0f;
-                if (productionMultiplier <= 0f)
-                {
-                    effectiveFactor = 0f;
-                }
-                else
-                {
-                    float minBound = minimumMoraleFactor * productionMultiplier;
-                    float maxBound = maximumMoraleFactor * Mathf.Max(1f, productionMultiplier);
-                    effectiveFactor = Mathf.Clamp(moraleFactor * productionMultiplier, minBound, maxBound);
-                }
+                float politicsMultiplier = EvaluatePoliticsMultiplier(city.mayorOfficerId, out int politicsScore);
+                float effectiveFactor = Mathf.Clamp(moraleFactor * productionMultiplier * politicsMultiplier,
+                    minimumMoraleFactor * Mathf.Max(0.1f, productionMultiplier) * Mathf.Max(0.1f, politicsMultiplier),
+                    maximumMoraleFactor * Mathf.Max(1f, productionMultiplier) * Mathf.Max(1f, politicsMultiplier));
                 int totalProduced = 0;
 
                 for (int p = 0; p < city.production.Count; p++)
@@ -73,7 +79,7 @@ namespace IFC.Systems
                     totalProduced += applied;
                 }
 
-                message.AppendLine($"  {city.displayName}: morale={city.morale:0.00} officerMorale={effectiveMorale:0.00} factor={effectiveFactor:0.00} produced={totalProduced}");
+                message.AppendLine($"  {city.displayName}: morale={city.morale:0.00} politics={politicsScore} mul={politicsMultiplier:0.00} factor={effectiveFactor:0.00} produced={totalProduced}");
             }
 
             Debug.Log(message.ToString());
@@ -98,6 +104,28 @@ namespace IFC.Systems
 
             float t = morale / moralePenaltyThreshold;
             return Mathf.Lerp(minimumMoraleFactor, moralePenaltyThreshold, t);
+        }
+
+        private float EvaluatePoliticsMultiplier(string mayorOfficerId, out int politics)
+        {
+            politics = 0;
+            if (_officerStatsProvider == null || string.IsNullOrEmpty(mayorOfficerId))
+            {
+                return 1f;
+            }
+
+            if (_officerStatsProvider.TryGetPolitics(mayorOfficerId, out politics))
+            {
+                if (politicsToProduction == null || politicsToProduction.length == 0)
+                {
+                    return 1f;
+                }
+
+                var evaluated = politicsToProduction.Evaluate(politics);
+                return Mathf.Clamp(evaluated, 0.1f, 3f);
+            }
+
+            return 1f;
         }
     }
 }
