@@ -47,6 +47,21 @@
           "intervalSeconds": 180,
           "secondsUntilNext": 60
         }
+      ],
+      "officers": [
+        {
+          "role": "Mayor",
+          "officerId": "officer_alpha_mayor",
+          "moraleBonus": 0.05,
+          "productionBonus": 0.12,
+          "constructionSpeedBonus": 0.2
+        },
+        {
+          "role": "Defense",
+          "officerId": "officer_alpha_defense",
+          "defenseRepairBonus": 0.3,
+          "moraleDamageReduction": 0.2
+        }
       ]
     },
     {
@@ -96,6 +111,20 @@
           "intervalSeconds": 240,
           "secondsUntilNext": 120
         }
+      ],
+      "officers": [
+        {
+          "role": "Mayor",
+          "officerId": "officer_beta_mayor",
+          "productionBonus": 0.08,
+          "constructionSpeedBonus": 0.1
+        },
+        {
+          "role": "Logistics",
+          "officerId": "officer_beta_logistics",
+          "moraleBonus": 0.02,
+          "productionBonus": 0.05
+        }
       ]
     },
     {
@@ -142,7 +171,49 @@
           "intervalSeconds": 300,
           "secondsUntilNext": 90
         }
+      ],
+      "officers": [
+        {
+          "role": "Mayor",
+          "officerId": "officer_gamma_mayor",
+          "moraleBonus": 0.04,
+          "productionBonus": 0.1
+        },
+        {
+          "role": "Defense",
+          "officerId": "officer_gamma_defense",
+          "defenseRepairBonus": 0.25,
+          "moraleDamageReduction": 0.25
+        },
+        {
+          "role": "Logistics",
+          "officerId": "officer_gamma_logistics",
+          "constructionSpeedBonus": 0.15
+        }
       ]
     }
+  ],
+  "world": {
+    "territories": [
+      { "territoryId": "territory_alpha", "ownerCityId": "city_alpha", "controlProgress": 1.0 },
+      { "territoryId": "territory_beta_frontier", "ownerCityId": "city_beta", "controlProgress": 0.75 },
+      { "territoryId": "territory_gamma_research", "ownerCityId": "city_gamma", "controlProgress": 0.9 },
+      { "territoryId": "territory_unclaimed_outpost", "ownerCityId": "", "controlProgress": 0.35 }
+    ],
+    "fronts": [
+      { "frontId": "front_eastern", "territoryIds": ["territory_alpha", "territory_beta_frontier"], "unlocked": true },
+      { "frontId": "front_northern", "territoryIds": ["territory_gamma_research", "territory_unclaimed_outpost"], "unlocked": false }
+    ]
+  },
+  "missions": {
+    "active": [
+      { "missionId": "mission_build_farm_lvl10", "progress": 3, "target": 5, "rewardClaimed": false },
+      { "missionId": "mission_train_scouts", "progress": 40, "target": 50, "rewardClaimed": false }
+    ],
+    "completed": ["mission_wall_upgrade_lv5"]
+  },
+  "pendingBattles": [
+    { "battleId": "battle_001", "attackerCityId": "city_beta", "defenderCityId": "city_gamma", "secondsUntilResolution": 180 },
+    { "battleId": "battle_002", "attackerCityId": "city_alpha", "defenderCityId": "territory_unclaimed_outpost", "secondsUntilResolution": 120 }
   ]
 }

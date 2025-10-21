@@ -7,10 +7,78 @@ using IFC.Data;
 // Life Domain: Autonomy & Logistics
 namespace IFC.Systems
 {
+    public enum OfficerRole
+    {
+        Mayor,
+        Defense,
+        Logistics
+    }
+
+    [Serializable]
+    public class SeedOfficerAssignment
+    {
+        public OfficerRole role = OfficerRole.Mayor;
+        public string officerId = string.Empty;
+        public float moraleBonus = 0f;
+        public float productionBonus = 0f;
+        public float constructionSpeedBonus = 0f;
+        public float defenseRepairBonus = 0f;
+        public float moraleDamageReduction = 0f;
+    }
+
+    [Serializable]
+    public class OfficerAssignment
+    {
+        public OfficerRole role = OfficerRole.Mayor;
+        public string officerId = string.Empty;
+    }
+
+    [Serializable]
+    public class OfficerBonusState
+    {
+        public float moraleBonus;
+        public float productionMultiplier;
+        public float constructionSpeedMultiplier;
+        public float defenseRepairMultiplier;
+        public float moraleDamageMultiplier;
+
+        public OfficerBonusState()
+        {
+            moraleBonus = 0f;
+            productionMultiplier = 1f;
+            constructionSpeedMultiplier = 1f;
+            defenseRepairMultiplier = 1f;
+            moraleDamageMultiplier = 1f;
+        }
+
+        public float GetProductionMultiplier()
+        {
+            return Mathf.Max(0f, productionMultiplier);
+        }
+
+        public float GetConstructionSpeedMultiplier()
+        {
+            return Mathf.Max(0.1f, constructionSpeedMultiplier);
+        }
+
+        public float GetDefenseRepairMultiplier()
+        {
+            return Mathf.Max(0f, defenseRepairMultiplier);
+        }
+
+        public float GetMoraleDamageMultiplier()
+        {
+            return Mathf.Clamp(moraleDamageMultiplier, 0.1f, 2f);
+        }
+    }
+
     [Serializable]
     public class SeedGameConfig
     {
         public List<SeedCityConfig> cities = new List<SeedCityConfig>();
+        public SeedWorldConfig world = new SeedWorldConfig();
+        public SeedMissionConfig missions = new SeedMissionConfig();
+        public List<SeedBattleRequest> pendingBattles = new List<SeedBattleRequest>();
     }
 
     [Serializable]
@@ -25,6 +93,7 @@ namespace IFC.Systems
         public List<SeedProductionField> production = new List<SeedProductionField>();
         public List<SeedTrainingQueueConfig> trainingQueues = new List<SeedTrainingQueueConfig>();
         public List<SeedTransportRouteConfig> transportRoutes = new List<SeedTransportRouteConfig>();
+        public List<SeedOfficerAssignment> officers = new List<SeedOfficerAssignment>();
     }
 
     [Serializable]
@@ -88,6 +157,54 @@ namespace IFC.Systems
     }
 
     [Serializable]
+    public class SeedWorldConfig
+    {
+        public List<SeedTerritoryConfig> territories = new List<SeedTerritoryConfig>();
+        public List<SeedFrontConfig> fronts = new List<SeedFrontConfig>();
+    }
+
+    [Serializable]
+    public class SeedTerritoryConfig
+    {
+        public string territoryId = string.Empty;
+        public string ownerCityId = string.Empty;
+        public float controlProgress = 0f;
+    }
+
+    [Serializable]
+    public class SeedFrontConfig
+    {
+        public string frontId = string.Empty;
+        public List<string> territoryIds = new List<string>();
+        public bool unlocked = false;
+    }
+
+    [Serializable]
+    public class SeedMissionConfig
+    {
+        public List<SeedMissionProgress> active = new List<SeedMissionProgress>();
+        public List<string> completed = new List<string>();
+    }
+
+    [Serializable]
+    public class SeedMissionProgress
+    {
+        public string missionId = string.Empty;
+        public int progress = 0;
+        public int target = 0;
+        public bool rewardClaimed = false;
+    }
+
+    [Serializable]
+    public class SeedBattleRequest
+    {
+        public string battleId = string.Empty;
+        public string attackerCityId = string.Empty;
+        public string defenderCityId = string.Empty;
+        public int secondsUntilResolution = 0;
+    }
+
+    [Serializable]
     public class TrainingCost
     {
         public ResourceType resourceType = ResourceType.Food;
@@ -98,6 +215,9 @@ namespace IFC.Systems
     public class GameState
     {
         public List<CityState> cities = new List<CityState>();
+        public WorldState world = new WorldState();
+        public MissionTrackerState missions = new MissionTrackerState();
+        public BattleQueueState battleQueue = new BattleQueueState();
 
         public CityState GetCityById(string cityId)
         {
@@ -127,6 +247,8 @@ namespace IFC.Systems
         public List<TrainingQueueState> trainingQueues = new List<TrainingQueueState>();
         public List<TransportRouteState> transportRoutes = new List<TransportRouteState>();
         public List<GarrisonUnit> garrison = new List<GarrisonUnit>();
+        public List<OfficerAssignment> officers = new List<OfficerAssignment>();
+        public OfficerBonusState officerBonuses = new OfficerBonusState();
     }
 
     [Serializable]
@@ -197,6 +319,70 @@ namespace IFC.Systems
     {
         public string unitType = string.Empty;
         public int quantity = 0;
+    }
+
+    [Serializable]
+    public class WorldState
+    {
+        public List<TerritoryState> territories = new List<TerritoryState>();
+        public List<FrontState> fronts = new List<FrontState>();
+    }
+
+    [Serializable]
+    public class TerritoryState
+    {
+        public string territoryId = string.Empty;
+        public string ownerCityId = string.Empty;
+        public float controlProgress = 0f;
+    }
+
+    [Serializable]
+    public class FrontState
+    {
+        public string frontId = string.Empty;
+        public List<string> territoryIds = new List<string>();
+        public bool unlocked = false;
+    }
+
+    [Serializable]
+    public class MissionTrackerState
+    {
+        public List<MissionProgressState> activeMissions = new List<MissionProgressState>();
+        public List<string> completedMissionIds = new List<string>();
+    }
+
+    [Serializable]
+    public class MissionProgressState
+    {
+        public string missionId = string.Empty;
+        public int progress = 0;
+        public int target = 0;
+        public bool rewardClaimed = false;
+    }
+
+    [Serializable]
+    public class BattleQueueState
+    {
+        public List<BattleRequest> pendingBattles = new List<BattleRequest>();
+        public List<BattleReport> battleHistory = new List<BattleReport>();
+    }
+
+    [Serializable]
+    public class BattleRequest
+    {
+        public string battleId = string.Empty;
+        public string attackerCityId = string.Empty;
+        public string defenderCityId = string.Empty;
+        public int secondsUntilResolution = 0;
+    }
+
+    [Serializable]
+    public class BattleReport
+    {
+        public string battleId = string.Empty;
+        public string attackerCityId = string.Empty;
+        public string defenderCityId = string.Empty;
+        public string outcome = "Pending";
     }
 
     public static class GameStateBuilder
@@ -296,8 +482,23 @@ namespace IFC.Systems
                     });
                 }
 
+                for (int o = 0; o < citySeed.officers.Count; o++)
+                {
+                    var assignmentSeed = citySeed.officers[o];
+                    cityState.officers.Add(new OfficerAssignment
+                    {
+                        role = assignmentSeed.role,
+                        officerId = assignmentSeed.officerId
+                    });
+                    ApplyOfficerAssignment(cityState.officerBonuses, assignmentSeed);
+                }
+
                 state.cities.Add(cityState);
             }
+
+            state.world = BuildWorldState(seed.world);
+            state.missions = BuildMissionTracker(seed.missions);
+            state.battleQueue = BuildBattleQueue(seed.pendingBattles);
 
             return state;
         }
@@ -328,6 +529,122 @@ namespace IFC.Systems
             var newUnit = new GarrisonUnit { unitType = unitType, quantity = 0 };
             city.garrison.Add(newUnit);
             return newUnit;
+        }
+
+        private static WorldState BuildWorldState(SeedWorldConfig seedWorld)
+        {
+            var world = new WorldState();
+            if (seedWorld == null)
+            {
+                return world;
+            }
+
+            for (int i = 0; i < seedWorld.territories.Count; i++)
+            {
+                var territorySeed = seedWorld.territories[i];
+                world.territories.Add(new TerritoryState
+                {
+                    territoryId = territorySeed.territoryId,
+                    ownerCityId = territorySeed.ownerCityId,
+                    controlProgress = Mathf.Clamp01(territorySeed.controlProgress)
+                });
+            }
+
+            for (int i = 0; i < seedWorld.fronts.Count; i++)
+            {
+                var frontSeed = seedWorld.fronts[i];
+                var frontState = new FrontState
+                {
+                    frontId = frontSeed.frontId,
+                    unlocked = frontSeed.unlocked
+                };
+
+                for (int t = 0; t < frontSeed.territoryIds.Count; t++)
+                {
+                    var territoryId = frontSeed.territoryIds[t];
+                    if (!string.IsNullOrEmpty(territoryId))
+                    {
+                        frontState.territoryIds.Add(territoryId);
+                    }
+                }
+
+                world.fronts.Add(frontState);
+            }
+
+            return world;
+        }
+
+        private static MissionTrackerState BuildMissionTracker(SeedMissionConfig seedMissions)
+        {
+            var tracker = new MissionTrackerState();
+            if (seedMissions == null)
+            {
+                return tracker;
+            }
+
+            for (int i = 0; i < seedMissions.active.Count; i++)
+            {
+                var missionSeed = seedMissions.active[i];
+                tracker.activeMissions.Add(new MissionProgressState
+                {
+                    missionId = missionSeed.missionId,
+                    progress = Mathf.Max(0, missionSeed.progress),
+                    target = Mathf.Max(0, missionSeed.target),
+                    rewardClaimed = missionSeed.rewardClaimed
+                });
+            }
+
+            for (int i = 0; i < seedMissions.completed.Count; i++)
+            {
+                var completedId = seedMissions.completed[i];
+                if (!string.IsNullOrEmpty(completedId))
+                {
+                    tracker.completedMissionIds.Add(completedId);
+                }
+            }
+
+            return tracker;
+        }
+
+        private static BattleQueueState BuildBattleQueue(List<SeedBattleRequest> seedBattles)
+        {
+            var queue = new BattleQueueState();
+            if (seedBattles == null)
+            {
+                return queue;
+            }
+
+            for (int i = 0; i < seedBattles.Count; i++)
+            {
+                var battleSeed = seedBattles[i];
+                queue.pendingBattles.Add(new BattleRequest
+                {
+                    battleId = battleSeed.battleId,
+                    attackerCityId = battleSeed.attackerCityId,
+                    defenderCityId = battleSeed.defenderCityId,
+                    secondsUntilResolution = Mathf.Max(0, battleSeed.secondsUntilResolution)
+                });
+            }
+
+            return queue;
+        }
+
+        private static void ApplyOfficerAssignment(OfficerBonusState target, SeedOfficerAssignment assignment)
+        {
+            if (target == null || assignment == null)
+            {
+                return;
+            }
+
+            target.moraleBonus += assignment.moraleBonus;
+            target.productionMultiplier += assignment.productionBonus;
+            target.constructionSpeedMultiplier += assignment.constructionSpeedBonus;
+            target.defenseRepairMultiplier += assignment.defenseRepairBonus;
+
+            float reduction = Mathf.Clamp01(assignment.moraleDamageReduction);
+            float currentMultiplier = target.moraleDamageMultiplier;
+            float newMultiplier = Mathf.Clamp(currentMultiplier * (1f - reduction), 0.1f, 2f);
+            target.moraleDamageMultiplier = newMultiplier;
         }
     }
 }

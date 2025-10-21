@@ -32,7 +32,10 @@ namespace IFC.Systems
             for (int c = 0; c < _state.cities.Count; c++)
             {
                 var city = _state.cities[c];
-                int activeSlots = Mathf.Min(city.buildQueue.activeOrders.Count, city.buildQueue.baseSlots);
+                var officerBonuses = city.officerBonuses ?? new OfficerBonusState();
+                int slotBonus = Mathf.Max(0, Mathf.RoundToInt(Mathf.Max(0f, officerBonuses.GetConstructionSpeedMultiplier() - 1f)));
+                int effectiveSlots = Mathf.Max(1, city.buildQueue.baseSlots + slotBonus);
+                int activeSlots = Mathf.Min(city.buildQueue.activeOrders.Count, effectiveSlots);
                 int completedThisTick = 0;
 
                 for (int i = 0; i < activeSlots; i++)
@@ -46,14 +49,15 @@ namespace IFC.Systems
                     }
 
                     order.blueprintGateSatisfied = true;
-                    order.secondsRemaining = Mathf.Max(0, order.secondsRemaining - secondsPerTick);
+                    int tickReduction = Mathf.CeilToInt(secondsPerTick * officerBonuses.GetConstructionSpeedMultiplier());
+                    order.secondsRemaining = Mathf.Max(0, order.secondsRemaining - tickReduction);
                     if (order.secondsRemaining == 0)
                     {
                         completedThisTick++;
                         sb.AppendLine($"  {city.displayName}: Completed {order.buildingType} -> Lv{order.targetLevel}");
                         city.buildQueue.activeOrders.RemoveAt(i);
                         i--;
-                        activeSlots = Mathf.Min(city.buildQueue.activeOrders.Count, city.buildQueue.baseSlots);
+                        activeSlots = Mathf.Min(city.buildQueue.activeOrders.Count, effectiveSlots);
                     }
                 }
 

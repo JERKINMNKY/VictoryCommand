@@ -35,7 +35,21 @@ namespace IFC.Systems
             for (int c = 0; c < _state.cities.Count; c++)
             {
                 var city = _state.cities[c];
-                float moraleFactor = CalculateMoraleFactor(city.morale);
+                var officerBonuses = city.officerBonuses ?? new OfficerBonusState();
+                float effectiveMorale = Mathf.Clamp(city.morale + officerBonuses.moraleBonus, 0f, 1.5f);
+                float moraleFactor = CalculateMoraleFactor(effectiveMorale);
+                float productionMultiplier = officerBonuses.GetProductionMultiplier();
+                float effectiveFactor = 0f;
+                if (productionMultiplier <= 0f)
+                {
+                    effectiveFactor = 0f;
+                }
+                else
+                {
+                    float minBound = minimumMoraleFactor * productionMultiplier;
+                    float maxBound = maximumMoraleFactor * Mathf.Max(1f, productionMultiplier);
+                    effectiveFactor = Mathf.Clamp(moraleFactor * productionMultiplier, minBound, maxBound);
+                }
                 int totalProduced = 0;
 
                 for (int p = 0; p < city.production.Count; p++)
@@ -46,7 +60,7 @@ namespace IFC.Systems
                         continue;
                     }
 
-                    int produced = Mathf.RoundToInt(productionField.fields * productionField.outputPerField * moraleFactor);
+                    int produced = Mathf.RoundToInt(productionField.fields * productionField.outputPerField * effectiveFactor);
                     var stockpile = GameStateBuilder.FindStockpile(city, productionField.resourceType);
                     if (stockpile == null)
                     {
@@ -59,7 +73,7 @@ namespace IFC.Systems
                     totalProduced += applied;
                 }
 
-                message.AppendLine($"  {city.displayName}: morale={city.morale:0.00} factor={moraleFactor:0.00} produced={totalProduced}");
+                message.AppendLine($"  {city.displayName}: morale={city.morale:0.00} officerMorale={effectiveMorale:0.00} factor={effectiveFactor:0.00} produced={totalProduced}");
             }
 
             Debug.Log(message.ToString());

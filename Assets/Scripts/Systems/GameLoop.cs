@@ -20,6 +20,11 @@ namespace IFC.Systems
         private TrainingSystem _trainingSystem;
         private AutoTransportSystem _autoTransportSystem;
         private DefenseSystem _defenseSystem;
+        private MapSystem _mapSystem;
+        private MissionSystem _missionSystem;
+        private BattleSystem _battleSystem;
+
+        public GameState CurrentState => _state;
 
         private void Awake()
         {
@@ -28,6 +33,9 @@ namespace IFC.Systems
             _trainingSystem = GetOrCreate<TrainingSystem>();
             _autoTransportSystem = GetOrCreate<AutoTransportSystem>();
             _defenseSystem = GetOrCreate<DefenseSystem>();
+            _mapSystem = GetOrCreate<MapSystem>();
+            _missionSystem = GetOrCreate<MissionSystem>();
+            _battleSystem = GetOrCreate<BattleSystem>();
 
             LoadSeed();
         }
@@ -61,6 +69,31 @@ namespace IFC.Systems
             _trainingSystem.ProcessTick(secondsPerTick);
             _defenseSystem.ProcessTick(secondsPerTick);
             _autoTransportSystem.ProcessTick(secondsPerTick);
+            _mapSystem.ProcessTick(secondsPerTick);
+            _missionSystem.ProcessTick(secondsPerTick);
+            _battleSystem.ProcessTick(secondsPerTick);
+        }
+
+        public void SetGameState(GameState state, string source = "runtime")
+        {
+            _state = state;
+            if (_state == null)
+            {
+                Debug.LogWarning("[GameLoop] Attempted to set a null game state.");
+                return;
+            }
+
+            _resourceSystem.Initialize(_state);
+            _buildQueueSystem.Initialize(_state);
+            _trainingSystem.Initialize(_state);
+            _autoTransportSystem.Initialize(_state);
+            _defenseSystem.Initialize(_state);
+            _mapSystem.Initialize(_state);
+            _missionSystem.Initialize(_state);
+            _battleSystem.Initialize(_state);
+            _timer = 0f;
+
+            Debug.Log($"[GameLoop] Loaded state ({source}) with {_state.cities.Count} cities.");
         }
 
         private T GetOrCreate<T>() where T : Component
@@ -85,15 +118,8 @@ namespace IFC.Systems
 
             string json = File.ReadAllText(seedPath);
             var seed = JsonUtility.FromJson<SeedGameConfig>(json);
-            _state = GameStateBuilder.FromSeed(seed);
-
-            _resourceSystem.Initialize(_state);
-            _buildQueueSystem.Initialize(_state);
-            _trainingSystem.Initialize(_state);
-            _autoTransportSystem.Initialize(_state);
-            _defenseSystem.Initialize(_state);
-
-            Debug.Log($"Loaded seed with {_state.cities.Count} cities from {seedPath}");
+            var state = GameStateBuilder.FromSeed(seed);
+            SetGameState(state, $"seed:{seedPath}");
         }
     }
 }

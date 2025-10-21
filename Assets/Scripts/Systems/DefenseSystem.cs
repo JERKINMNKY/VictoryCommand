@@ -36,20 +36,27 @@ namespace IFC.Systems
             {
                 var city = _state.cities[c];
                 int moralePercent = Mathf.RoundToInt(city.morale * 100f);
+                var officerBonuses = city.officerBonuses ?? new OfficerBonusState();
+                int effectiveRepairPerTick = repairPerTick > 0
+                    ? Mathf.Max(1, Mathf.RoundToInt(repairPerTick * officerBonuses.GetDefenseRepairMultiplier()))
+                    : 0;
+                int moraleDamage = moraleDamageAmount > 0
+                    ? Mathf.Max(1, Mathf.RoundToInt(moraleDamageAmount * officerBonuses.GetMoraleDamageMultiplier()))
+                    : 0;
 
                 if (moralePercent < moraleDamageThreshold)
                 {
-                    city.wall.currentHp = Mathf.Max(0, city.wall.currentHp - moraleDamageAmount);
+                    city.wall.currentHp = Mathf.Max(0, city.wall.currentHp - moraleDamage);
                     if (city.wall.fortificationPoints > 0 && city.wall.currentHp == 0)
                     {
                         city.wall.fortificationPoints = Mathf.Max(0, city.wall.fortificationPoints - 1);
-                        city.wall.currentHp = Mathf.Min(city.wall.maxHp, moraleDamageAmount);
+                        city.wall.currentHp = Mathf.Min(city.wall.maxHp, moraleDamage);
                     }
-                    sb.AppendLine($"  {city.displayName}: morale {moralePercent}% -> wall damage, HP {city.wall.currentHp}/{city.wall.maxHp}");
+                    sb.AppendLine($"  {city.displayName}: morale {moralePercent}% -> wall damage ({moraleDamage}), HP {city.wall.currentHp}/{city.wall.maxHp}");
                 }
                 else
                 {
-                    int repaired = Mathf.Min(repairPerTick, city.wall.maxHp - city.wall.currentHp);
+                    int repaired = Mathf.Min(effectiveRepairPerTick, city.wall.maxHp - city.wall.currentHp);
                     if (repaired > 0)
                     {
                         city.wall.currentHp += repaired;
