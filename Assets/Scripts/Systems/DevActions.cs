@@ -1,3 +1,5 @@
+using System;
+using IFC.Systems.UI;
 using UnityEngine;
 
 namespace IFC.Systems
@@ -11,43 +13,98 @@ namespace IFC.Systems
         {
             if (loop?.CurrentState?.inventory == null || amount <= 0)
             {
+                Debug.LogWarning("[Dev] Invalid token grant request.");
                 return;
             }
 
             loop.CurrentState.inventory.Add(BuildQueueSystem.UpgradeTokenId, amount);
             Debug.Log($"[Dev] Granted {BuildQueueSystem.UpgradeTokenId} x{amount}");
+            UIRefreshService.RefreshAll();
         }
 
-        public static void EnqueueUpgrade(GameLoop loop, string cityId, string buildingType, int targetLevel, int buildSeconds)
+        public static void GrantResource(GameLoop loop, string cityId, string resourceKey, int amount)
         {
-            if (loop?.CurrentState == null || string.IsNullOrEmpty(cityId) || string.IsNullOrEmpty(buildingType) || targetLevel <= 0)
+            if (loop?.CurrentState == null || string.IsNullOrEmpty(cityId) || string.IsNullOrEmpty(resourceKey) || amount == 0)
             {
+                Debug.LogWarning("[Dev] Invalid resource grant request.");
                 return;
             }
 
             var city = loop.CurrentState.GetCityById(cityId);
             if (city == null)
             {
-                Debug.LogWarning($"[Dev] City {cityId} not found for upgrade enqueue.");
+                Debug.LogWarning($"[Dev] City {cityId} not found.");
                 return;
             }
 
-            var order = new BuildOrderState
+            if (Enum.TryParse(resourceKey, out IFC.Data.ResourceType resourceType))
             {
-                buildingType = buildingType,
-                targetLevel = targetLevel,
-                secondsRemaining = Mathf.Max(1, buildSeconds),
-                blueprintGateSatisfied = false
-            };
+                var stockpile = GameStateBuilder.FindStockpile(city, resourceType);
+                if (stockpile == null)
+                {
+                    city.stockpiles.Add(new ResourceStockpile
+                    {
+                        resourceType = resourceType,
+                        amount = Mathf.Max(0, amount),
+                        capacity = Mathf.Max(10000, amount)
+                    });
+                }
+                else
+                {
+                    stockpile.amount = Mathf.Max(0, stockpile.amount + amount);
+                }
 
-            city.buildQueue.activeOrders.Add(order);
-            Debug.Log($"[Dev] Enqueued {buildingType} -> Lv{targetLevel} for {city.displayName} ({buildSeconds}s).");
+                Debug.Log($"[Dev] Granted {resourceKey} x{amount} to {city.displayName}");
+            }
+            else
+            {
+                loop.CurrentState.inventory.Add(resourceKey, amount);
+                Debug.Log($"[Dev] Added inventory item {resourceKey} x{amount}");
+            }
+
+            UIRefreshService.RefreshAll();
+        }
+
+        public static void PlaceBuilding(GameLoop loop, string cityId, string buildingKey)
+        {
+            if (loop?.BuildController == null)
+            {
+                Debug.LogWarning("[Dev] BuildController not initialised.");
+                return;
+            }
+
+            if (loop.BuildController.TryPlaceBuilding(cityId, buildingKey, out var fail))
+            {
+                UIRefreshService.RefreshAll();
+                return;
+            }
+
+            Debug.LogWarning($"[Dev] PlaceBuilding failed: {fail}");
+        }
+
+        public static void EnqueueUpgrade(GameLoop loop, string cityId, string buildingKey, int targetLevel)
+        {
+            if (loop?.BuildController == null)
+            {
+                Debug.LogWarning("[Dev] BuildController not initialised.");
+                return;
+            }
+
+            if (loop.BuildController.TryEnqueueUpgrade(cityId, buildingKey, targetLevel, out var fail, out var eta))
+            {
+                Debug.Log($"[Dev] Enqueued upgrade ETA {eta:mm\:ss}");
+                UIRefreshService.RefreshAll();
+                return;
+            }
+
+            Debug.LogWarning($"[Dev] EnqueueUpgrade failed: {fail}");
         }
 
         public static void AdvanceTicks(GameLoop loop, int ticks)
         {
             if (loop == null || ticks <= 0)
             {
+                Debug.LogWarning("[Dev] Invalid tick advance request.");
                 return;
             }
 
@@ -57,6 +114,7 @@ namespace IFC.Systems
             }
 
             Debug.Log($"[Dev] Advanced simulation by {ticks} tick(s).");
+            UIRefreshService.RefreshAll();
         }
     }
 }

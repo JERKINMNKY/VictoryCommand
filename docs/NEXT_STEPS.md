@@ -25,11 +25,8 @@ Layer focus: Core Simulation | Life Domains: Autonomy, Security, Logistics
 - Update seed data so each city (or the global player) owns initial token balances for migration testing.
 - Retrofit `BuildQueueSystem`:
   - Levels 1–9: resource-only.
-  - Levels 10–20: require ≥1 `UpgradeToken` before queueing.
-  - Consume token immediately on start, emit logs:  
-    `[Build] Gate {city}:{building} L{to} requires UpgradeToken x1` (insufficient)  
-    `[Build] Start {city}:{building} L{from}->{to} (consumed UpgradeToken x1)`  
-    `[Build] Done {city}:{building} L{to}`.
+  - Levels 10–20: require =1 `UpgradeToken` before queueing; gate log format `[Build] Gate {city}:{building} L{to} RequiresToken`.
+  - Consume token immediately on start, emit logs: `[Build] Start {city}:{building} L{from}->{to} ConsumedToken` and `[Build] Done {city}:{building} L{to}`.
 - Provide `DevActions` helpers (CLI/editor) for granting tokens, enqueueing upgrades, and advancing ticks for integration tests.
 - Add EditMode coverage: gated success/failure (L9→L10), gated consumption (L12→L13), non-gated flow (L5→L6), token decrement assertions.
 
@@ -72,3 +69,15 @@ Layer focus: Core Simulation | Life Domains: Autonomy, Security, Logistics
 - Extend `CityTileEditor` to preview officer bonuses and tile effects pulled from the new data.
 - Replace console-only tick feedback with lightweight UI panels (city summary, mission tracker, campaign status).
 - Instrument `GameLoop` with profiler markers to help balance tick cost as systems expand.
+
+### Starter Profile & TH>10 Scaffolding
+- Define `StartProfile` data (JSON or SO) with new-player city composition, starting inventory, tile caps per Town Hall, rookie missions, and city tags (e.g., `Capital`).
+- Allow `GameLoop` to load a profile via inspector/seed override and build runtime state through `GameStateBuilder`.
+- Enforce tile caps (editor + runtime) using profile-driven lookup; log `[Build] Locked TileCap TH={th} cap={cap} used={used}` when exceeded.
+- Extend `BuildingData` with prerequisite entries (`type`, `minLevel`) validated in editor/runtime; log `[Build] Locked {buildingKey} Needs {reqType}={level}` on failure.
+- Hook rookie missions into `MissionSystem` via published events (`BuildingConstructed`, `BuildingUpgraded`, etc.) and grant rewards (including `UpgradeToken`).
+- Add city-tag-based slot unlock scaffolding for Town Hall >10 (e.g., `UltraEnergy` slots) and log `[Unlock] UltraEnergySlot +{delta} (TH={level})` when thresholds are hit.
+- Provide inspector `DevActionsBehaviour` shortcuts (GrantResource, GrantUpgradeToken, PlaceBuilding, EnqueueUpgrade, AdvanceTicks) so designers can trigger logs without UI.
+- Auto-spawn UGUI MVP via `CityUIBootstrap` (top bar, four building cards, tile footer, toast overlay) and refresh after each tick.
+- Document quick verification: add `DevActionsBehaviour`, right-click context to hit caps/prereqs, run scene to observe UI upgrades and mission rewards.
+- War2Victory reference: consulted `War2V_Decompiled/assets/cache/extracted/gamecaches/main/17297588590134.json` (tile unlock cadence) and related cache entries for blueprint/token gating behavior.

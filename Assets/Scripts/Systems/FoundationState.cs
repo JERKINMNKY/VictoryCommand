@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using IFC.Data;
+using IFC.Systems.Profiles;
 
 // Layer: Core Simulation
 // Life Domain: Autonomy & Logistics
@@ -82,6 +83,55 @@ namespace IFC.Systems
         TrainingSpeedBuff,
         ResourceExchange,
         CapacityBoost
+    }
+
+    [Serializable]
+    public class TileCapEntry
+    {
+        public int townHallLevel = 1;
+        public int maxTiles = 16;
+    }
+
+    [Serializable]
+    public class TileCapTable
+    {
+        public List<TileCapEntry> entries = new List<TileCapEntry>();
+
+        public int GetCap(int townHallLevel)
+        {
+            int cap = 0;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var entry = entries[i];
+                if (townHallLevel >= entry.townHallLevel)
+                {
+                    cap = Mathf.Max(cap, entry.maxTiles);
+                }
+            }
+
+            return cap;
+        }
+    }
+
+    [Serializable]
+    public class UnlockRule
+    {
+        public string tag = string.Empty;
+        public int townHallMin = 1;
+        public UnlockReward unlock = new UnlockReward();
+    }
+
+    [Serializable]
+    public class UnlockReward
+    {
+        public string slotType = string.Empty;
+        public int count = 0;
+    }
+
+    [Serializable]
+    public class UnlockRuleSet
+    {
+        public List<UnlockRule> rules = new List<UnlockRule>();
     }
 
     [Serializable]
@@ -206,6 +256,13 @@ namespace IFC.Systems
     }
 
     [Serializable]
+    public class SeedBuildingLevel
+    {
+        public string buildingType = string.Empty;
+        public int level = 0;
+    }
+
+    [Serializable]
     public class SeedGameConfig
     {
         public List<SeedCityConfig> cities = new List<SeedCityConfig>();
@@ -213,6 +270,9 @@ namespace IFC.Systems
         public SeedMissionConfig missions = new SeedMissionConfig();
         public List<SeedBattleRequest> pendingBattles = new List<SeedBattleRequest>();
         public SeedInventoryConfig inventory = new SeedInventoryConfig();
+        public TileCapTable tileCaps = new TileCapTable();
+        public UnlockRuleSet unlockRules = new UnlockRuleSet();
+        public List<string> rookieMissions = new List<string>();
     }
 
     [Serializable]
@@ -231,6 +291,8 @@ namespace IFC.Systems
         public List<SeedTransportRouteConfig> transportRoutes = new List<SeedTransportRouteConfig>();
         public List<SeedOfficerAssignment> officers = new List<SeedOfficerAssignment>();
         public List<SeedBuildingFunctionConfig> buildingFunctions = new List<SeedBuildingFunctionConfig>();
+        public List<string> tags = new List<string>();
+        public List<SeedBuildingLevel> buildings = new List<SeedBuildingLevel>();
     }
 
     [Serializable]
@@ -357,6 +419,9 @@ namespace IFC.Systems
         public MissionTrackerState missions = new MissionTrackerState();
         public BattleQueueState battleQueue = new BattleQueueState();
         public InventoryState inventory = new InventoryState();
+        public TileCapTable tileCaps = new TileCapTable();
+        public UnlockRuleSet unlockRules = new UnlockRuleSet();
+        public List<string> rookieMissionIds = new List<string>();
 
         public CityState GetCityById(string cityId)
         {
@@ -391,6 +456,9 @@ namespace IFC.Systems
         public List<OfficerAssignment> officers = new List<OfficerAssignment>();
         public OfficerBonusState officerBonuses = new OfficerBonusState();
         public List<BuildingFunctionState> buildingFunctions = new List<BuildingFunctionState>();
+        public List<string> tags = new List<string>();
+        public List<BuildingLevelState> buildings = new List<BuildingLevelState>();
+        public Dictionary<string, int> slotUnlocks = new Dictionary<string, int>();
     }
 
     [Serializable]
@@ -517,6 +585,13 @@ namespace IFC.Systems
         public string attackerCityId = string.Empty;
         public string defenderCityId = string.Empty;
         public int secondsUntilResolution = 0;
+    }
+
+    [Serializable]
+    public class BuildingLevelState
+    {
+        public string buildingKey = string.Empty;
+        public int level = 0;
     }
 
     [Serializable]
@@ -659,6 +734,33 @@ namespace IFC.Systems
                     cityState.buildingFunctions.Add(BuildBuildingFunctionState(functionSeed));
                 }
 
+                if (citySeed.tags != null)
+                {
+                    for (int t = 0; t < citySeed.tags.Count; t++)
+                    {
+                        var tag = citySeed.tags[t];
+                        if (!string.IsNullOrEmpty(tag))
+                        {
+                            cityState.tags.Add(tag);
+                        }
+                    }
+                }
+
+                for (int b = 0; b < citySeed.buildings.Count; b++)
+                {
+                    var buildingSeed = citySeed.buildings[b];
+                    if (string.IsNullOrEmpty(buildingSeed.buildingType))
+                    {
+                        continue;
+                    }
+
+                    cityState.buildings.Add(new BuildingLevelState
+                    {
+                        buildingKey = buildingSeed.buildingType,
+                        level = Mathf.Max(0, buildingSeed.level)
+                    });
+                }
+
                 state.cities.Add(cityState);
             }
 
@@ -666,8 +768,97 @@ namespace IFC.Systems
             state.missions = BuildMissionTracker(seed.missions);
             state.battleQueue = BuildBattleQueue(seed.pendingBattles);
             state.inventory = BuildInventoryState(seed.inventory);
+            state.tileCaps = seed.tileCaps ?? new TileCapTable();
+            state.unlockRules = seed.unlockRules ?? new UnlockRuleSet();
+            if (seed.rookieMissions != null)
+            {
+                state.rookieMissionIds.AddRange(seed.rookieMissions);
+                for (int i = 0; i < seed.rookieMissions.Count; i++)
+                {
+                    var def = MissionDefinitionRegistry.Get(seed.rookieMissions[i]);
+                    if (def != null)
+                    {
+                        state.missions.activeMissions.Add(new MissionProgressState
+                        {
+                            missionId = def.missionId,
+                            progress = 0,
+                            target = 1,
+                            rewardClaimed = false
+                        });
+                    }
+                }
+            }
 
             return state;
+        }
+
+        public static GameState FromStartProfile(Profiles.StartProfileDefinition profile)
+        {
+            if (profile == null)
+            {
+                return new GameState();
+            }
+
+            var seed = new SeedGameConfig();
+            var cityConfig = new SeedCityConfig
+            {
+                id = string.IsNullOrEmpty(profile.startingCity.id) ? "city" : profile.startingCity.id,
+                mayorId = profile.startingCity.mayorOfficerId,
+                tags = new List<string>(profile.cityTags)
+            };
+
+            if (profile.startingCity.tags != null)
+            {
+                for (int t = 0; t < profile.startingCity.tags.Count; t++)
+                {
+                    var tag = profile.startingCity.tags[t];
+                    if (!string.IsNullOrEmpty(tag) && !cityConfig.tags.Contains(tag))
+                    {
+                        cityConfig.tags.Add(tag);
+                    }
+                }
+            }
+
+            foreach (var kvp in profile.startingCity.buildings)
+            {
+                cityConfig.buildings.Add(new SeedBuildingLevel
+                {
+                    buildingType = kvp.Key,
+                    level = Mathf.Max(0, kvp.Value)
+                });
+            }
+
+            foreach (var kvp in profile.startingCity.stockpile)
+            {
+                if (System.Enum.TryParse(kvp.Key, out ResourceType resourceType))
+                {
+                    cityConfig.resources.Add(new SeedResourceStockpile
+                    {
+                        resourceType = resourceType,
+                        stored = Mathf.Max(0, kvp.Value),
+                        capacity = Mathf.Max(10000, Mathf.Max(0, kvp.Value) + 5000)
+                    });
+                }
+                else
+                {
+                    seed.inventory.items.Add(new SeedInventoryItem
+                    {
+                        itemId = kvp.Key,
+                        quantity = Mathf.Max(0, kvp.Value)
+                    });
+                }
+            }
+
+            seed.cities.Add(cityConfig);
+            seed.tileCaps = profile.tileCaps != null
+                ? new TileCapTable { entries = new List<TileCapEntry>(profile.tileCaps.entries) }
+                : new TileCapTable();
+            seed.unlockRules = profile.unlockRules != null
+                ? new UnlockRuleSet { rules = new List<UnlockRule>(profile.unlockRules.rules) }
+                : new UnlockRuleSet();
+            seed.rookieMissions = new List<string>(profile.rookieMissions ?? new List<string>());
+
+            return FromSeed(seed);
         }
 
         public static ResourceStockpile FindStockpile(CityState city, ResourceType resourceType)

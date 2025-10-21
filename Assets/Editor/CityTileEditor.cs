@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 using IFC.Data;
 using IFC.CitySystem;
+using IFC.Systems;
+using IFC.Systems.Profiles;
 
 public class CityTileEditor : EditorWindow
 {
@@ -15,6 +18,7 @@ public class CityTileEditor : EditorWindow
     BuildingData selectedAssignBuilding = null;
     int cityGridCols = 0;
     int resGridCols = 0;
+    TileCapTable tileCapTable;
 
     [MenuItem("IFC/City Tile Editor")]
     public static void ShowWindow()
@@ -698,17 +702,20 @@ public class CityTileEditor : EditorWindow
     {
         if (!HasValidSelection()) return;
 
-        // if assigning a real building, validate first
         if (b != null)
         {
             int idx = selectedTileIndex;
-            // Use the existing tile data for validation
             if (cityData != null && idx >= 0 && idx < cityData.cityTiles.Count)
             {
                 var tile = cityData.cityTiles[idx];
                 if (!CityManager.CanPlaceBuilding(cityData, tile, b, out string reason))
                 {
                     EditorUtility.DisplayDialog("Cannot place building", string.Format("Cannot place {0}: {1}", b.BuildingName, reason), "OK");
+                    return;
+                }
+
+                if (!ValidateEditorPlacement(b, tile))
+                {
                     return;
                 }
             }
@@ -728,6 +735,132 @@ public class CityTileEditor : EditorWindow
                 cityData.editorLastSelectedTile = idx;
             }
         });
+    }
+
+    bool ValidateEditorPlacement(BuildingData building, TileData tile)
+    {
+        EnsureTileCapTable();
+
+        bool replacing = tile.assignedBuilding != null;
+        if (!replacing && tileCapTable != null)
+        {
+            int thLevel = GetEditorTownHallLevel();
+            int cap = tileCapTable.GetCap(thLevel);
+            if (cap > 0)
+            {
+                int used = CountAssignedTilesEditor();
+                if (used >= cap)
+                {
+                    string message = $"[Build] Locked TileCap TH={thLevel} cap={cap} used={used}";
+                    Debug.Log(message);
+                    EditorUtility.DisplayDialog("Tile Cap Reached", message, "OK");
+                    return false;
+                }
+            }
+        }
+
+        if (!CheckPrereqsEditor(building))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool CheckPrereqsEditor(BuildingData building)
+    {
+        if (building == null || building.requires == null)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < building.requires.Count; i++)
+        {
+            var requirement = building.requires[i];
+            if (string.IsNullOrEmpty(requirement.buildingType))
+            {
+                continue;
+            }
+
+            int currentLevel = string.Equals(requirement.buildingType, "TownHall", StringComparison.OrdinalIgnoreCase)
+                ? GetEditorTownHallLevel()
+                : GetAssignedLevelEditor(requirement.buildingType);
+
+            if (currentLevel < requirement.minLevel)
+            {
+                string message = $"[Build] Locked {building.BuildingName} Needs {requirement.buildingType}≥{requirement.minLevel}";
+                Debug.Log(message);
+                EditorUtility.DisplayDialog("Prerequisite Missing", message, "OK");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void EnsureTileCapTable()
+    {
+        if (tileCapTable != null)
+        {
+            return;
+        }
+
+        try
+        {
+            var profile = StartProfileLoader.Load(null, "content/profiles/StartProfile_NewPlayer.json");
+            tileCapTable = profile?.tileCaps ?? new TileCapTable();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[CityTileEditor] Failed to load tile caps: {ex.Message}");
+            tileCapTable = new TileCapTable();
+        }
+    }
+
+    int CountAssignedTilesEditor()
+    {
+        if (cityData == null || cityData.cityTiles == null)
+        {
+            return 0;
+        }
+
+        int count = 0;
+        for (int i = 0; i < cityData.cityTiles.Count; i++)
+        {
+            if (cityData.cityTiles[i].assignedBuilding != null)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    int GetAssignedLevelEditor(string buildingType)
+    {
+        if (cityData == null || cityData.cityTiles == null)
+        {
+            return 0;
+        }
+
+        int level = 0;
+        for (int i = 0; i < cityData.cityTiles.Count; i++)
+        {
+            var assigned = cityData.cityTiles[i].assignedBuilding;
+            if (assigned != null && string.Equals(assigned.BuildingName, buildingType, StringComparison.OrdinalIgnoreCase))
+            {
+                level = Mathf.Max(level, assigned.Level);
+            }
+        }
+
+        return level;
+    }
+
+    int GetEditorTownHallLevel()
+    {
+        int thLevel = cityData != null ? cityData.cityLevel : 0;
+        thLevel = Mathf.Max(thLevel, GetAssignedLevelEditor("TownHall"));
+        return thLevel;
     }
 
     void ClearSelected()

@@ -1,0 +1,46 @@
+{
+  "profileId": "NewPlayer",
+  "startingCity": {
+    "id": "Capital",
+    "buildings": {
+      "TownHall": 1,
+      "GeneralHQ": 1,
+      "MilitaryInstitute": 1,
+      "Wall": 0
+    },
+    "stockpile": {
+      "Food": 5000,
+      "Steel": 5000,
+      "Oil": 5000,
+      "RareMetal": 800,
+      "UpgradeToken": 0
+    },
+    "mayorOfficerId": "",
+    "routes": [],
+    "garrison": [],
+    "tags": [ "Capital" ]
+  },
+  "tileCapByTH": {
+    "1": 16,
+    "2": 20,
+    "3": 24,
+    "4": 27,
+    "5": 30,
+    "6": 32,
+    "7": 34,
+    "8": 36,
+    "9": 38,
+    "10": 39
+  },
+  "rookieMissions": [
+    "BuildFarmL1",
+    "UpgradeTownHall2",
+    "BuildArmsPlantL1"
+  ],
+  "cityTags": [ "Capital" ],
+  "unlockRules": [
+    { "tag": "Capital", "townHallMin": 11, "unlock": { "slotType": "UltraEnergy", "count": 1 } },
+    { "tag": "Capital", "townHallMin": 12, "unlock": { "slotType": "UltraEnergy", "count": 2 } },
+    { "tag": "Capital", "townHallMin": 13, "unlock": { "slotType": "UltraEnergy", "count": 3 } }
+  ]
+}

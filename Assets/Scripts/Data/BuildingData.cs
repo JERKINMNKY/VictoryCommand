@@ -36,10 +36,19 @@ namespace IFC.Data
         public int unlockLevel = 1;
     [Tooltip("Maximum instances of this building per city. 0 = no limit.")]
     public int maxPerCity = 0;
+        [Tooltip("Building requirements (type and minimum level) before this can be upgraded/placed.")]
+        public List<BuildingRequirement> requires = new List<BuildingRequirement>();
 
         public string BuildingName => _buildingName;
         public int Level => _level;
         public int UpgradeTimeSeconds => _upgradeTimeSeconds;
         public IReadOnlyList<ResourceCost> CostByResource => _costByResource;
+    }
+
+    [System.Serializable]
+    public class BuildingRequirement
+    {
+        public string buildingType = string.Empty;
+        public int minLevel = 1;
     }
 }

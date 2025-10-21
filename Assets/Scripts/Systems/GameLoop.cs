@@ -3,6 +3,8 @@ using System.IO;
 using UnityEngine;
 using IFC.Data;
 using IFC.Systems.Officers;
+using IFC.Systems.Profiles;
+using IFC.Systems.UI;
 
 // Layer: Core Simulation
 // Life Domain: Autonomy & Logistics
@@ -15,6 +17,9 @@ namespace IFC.Systems
     {
         public int secondsPerTick = 60;
         public string seedFileName = "game_state.json";
+        [SerializeField] private bool useStartProfile = false;
+        [SerializeField] private StartProfileAsset startProfileAsset;
+        [SerializeField] private string startProfileJsonPath = "content/profiles/StartProfile_NewPlayer.json";
 
         private float _timer;
         private GameState _state;
@@ -30,8 +35,12 @@ namespace IFC.Systems
         private StatModifierRegistry _statModifiers;
         private readonly Dictionary<string, OfficerAssignmentView> _officerAssignmentViews = new Dictionary<string, OfficerAssignmentView>();
         private IOfficerStatsProvider _officerStatsProvider;
+        private readonly BuildingCatalog _buildingCatalog = new BuildingCatalog();
+        private BuildController _buildController;
 
         public GameState CurrentState => _state;
+        public BuildController BuildController => _buildController;
+        public BuildingCatalog BuildingCatalog => _buildingCatalog;
 
         private void Awake()
         {
@@ -44,6 +53,8 @@ namespace IFC.Systems
             _missionSystem = GetOrCreate<MissionSystem>();
             _battleSystem = GetOrCreate<BattleSystem>();
             _buildingFunctionSystem = GetOrCreate<BuildingFunctionSystem>();
+            GetOrCreate<CityUIBootstrap>();
+            GetOrCreate<DevActionsBehaviour>();
 
             LoadSeed();
         }
@@ -83,6 +94,7 @@ namespace IFC.Systems
             _mapSystem.ProcessTick(secondsPerTick);
             _missionSystem.ProcessTick(secondsPerTick);
             _battleSystem.ProcessTick(secondsPerTick);
+            UIRefreshService.RefreshAll();
         }
 
         public void SetGameState(GameState state, string source = "runtime")
@@ -98,6 +110,9 @@ namespace IFC.Systems
             EnsureOfficerStatsProvider();
             _resourceSystem.SetOfficerStatsProvider(_officerStatsProvider);
             _buildQueueSystem.Initialize(_state);
+            EnsureBuildingCatalog();
+            _buildQueueSystem.SetBuildingCatalog(_buildingCatalog);
+            _buildController = new BuildController(_state, _buildingCatalog, _state.inventory, _state.tileCaps);
             _statModifiers = new StatModifierRegistry();
             BuildOfficerAssignmentViews();
             _trainingSystem.Initialize(_state, _statModifiers);
@@ -125,6 +140,14 @@ namespace IFC.Systems
 
         private void LoadSeed()
         {
+            if (useStartProfile)
+            {
+                var profile = StartProfileLoader.Load(startProfileAsset, startProfileJsonPath);
+                var profileState = GameStateBuilder.FromStartProfile(profile);
+                SetGameState(profileState, $"profile:{profile.profileId}");
+                return;
+            }
+
             string seedPath = Path.Combine(Application.dataPath, "..", "content", "seed", seedFileName);
             if (!File.Exists(seedPath))
             {
@@ -201,6 +224,26 @@ namespace IFC.Systems
             }
 
             _officerStatsProvider = new OfficerStatsProvider(officers);
+        }
+
+        private void EnsureBuildingCatalog()
+        {
+            BuildingData[] definitions = Resources.LoadAll<BuildingData>("ScriptableObjects/Buildings");
+            if (definitions == null || definitions.Length == 0)
+            {
+                definitions = Resources.LoadAll<BuildingData>(string.Empty);
+            }
+
+            for (int i = 0; i < definitions.Length; i++)
+            {
+                var data = definitions[i];
+                if (data == null)
+                {
+                    continue;
+                }
+
+                _buildingCatalog.Add(data);
+            }
         }
     }
 }

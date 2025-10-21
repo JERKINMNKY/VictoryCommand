@@ -51,6 +51,12 @@
           "secondsUntilNext": 60
         }
       ],
+      "buildings": [
+        { "buildingType": "TownHall", "level": 10 },
+        { "buildingType": "GeneralHQ", "level": 9 },
+        { "buildingType": "MilitaryInstitute", "level": 8 },
+        { "buildingType": "Wall", "level": 7 }
+      ],
       "officers": [
         {
           "role": "Mayor",
@@ -131,6 +137,12 @@
           "secondsUntilNext": 120
         }
       ],
+      "buildings": [
+        { "buildingType": "TownHall", "level": 9 },
+        { "buildingType": "GeneralHQ", "level": 8 },
+        { "buildingType": "MilitaryInstitute", "level": 7 },
+        { "buildingType": "Wall", "level": 6 }
+      ],
       "officers": [
         {
           "role": "Mayor",
@@ -199,6 +211,12 @@
           "intervalSeconds": 300,
           "secondsUntilNext": 90
         }
+      ],
+      "buildings": [
+        { "buildingType": "TownHall", "level": 11 },
+        { "buildingType": "GeneralHQ", "level": 9 },
+        { "buildingType": "MilitaryInstitute", "level": 8 },
+        { "buildingType": "Wall", "level": 9 }
       ],
       "officers": [
         {
