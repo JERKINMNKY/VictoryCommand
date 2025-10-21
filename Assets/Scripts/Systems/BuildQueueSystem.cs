@@ -14,7 +14,7 @@ namespace IFC.Systems
     public class BuildQueueSystem : MonoBehaviour
     {
         public const string UpgradeTokenId = "UpgradeToken";
-        private const int UpgradeTokenGateLevel = 10;
+        public const int UpgradeTokenGateLevel = 10;
         [SerializeField] private bool verboseLogging = false;
         private GameState _state;
         private BuildingCatalog _buildingCatalog;

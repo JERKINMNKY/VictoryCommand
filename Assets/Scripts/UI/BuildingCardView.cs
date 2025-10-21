@@ -53,8 +53,8 @@ namespace IFC.Systems.UI
             {
                 costText.text = FormatCost(data);
                 int seconds = viewModel.GetNextUpgradeDuration(_buildingKey);
-                etaText.text = seconds > 0 ? TimeSpan.FromSeconds(seconds).ToString("mm\:ss") : "--";
-            }
+                etaText.text = seconds > 0 ? TimeSpan.FromSeconds(seconds).ToString("mm\\:ss") : "--";
+        }
             else
             {
                 costText.text = "Max";

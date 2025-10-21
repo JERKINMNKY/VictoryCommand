@@ -14,7 +14,11 @@ namespace IFC.Systems.UI
         {
             if (gameLoop == null)
             {
-                gameLoop = FindObjectOfType<GameLoop>();
+#if UNITY_2023_1_OR_NEWER
+                gameLoop = Object.FindFirstObjectByType<GameLoop>();
+#else
+                gameLoop = Object.FindObjectOfType<GameLoop>();
+#endif
             }
 
             BuildUI();
@@ -22,7 +26,13 @@ namespace IFC.Systems.UI
 
         private void BuildUI()
         {
-            if (FindObjectOfType<CityUIController>() != null)
+            if (
+#if UNITY_2023_1_OR_NEWER
+                Object.FindAnyObjectByType<CityUIController>()
+#else
+                Object.FindObjectOfType<CityUIController>()
+#endif
+                != null)
             {
                 return;
             }

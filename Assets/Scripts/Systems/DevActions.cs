@@ -92,7 +92,7 @@ namespace IFC.Systems
 
             if (loop.BuildController.TryEnqueueUpgrade(cityId, buildingKey, targetLevel, out var fail, out var eta))
             {
-                Debug.Log($"[Dev] Enqueued upgrade ETA {eta:mm\:ss}");
+                Debug.Log($"[Dev] Enqueued upgrade ETA {eta:mm\\:ss}");
                 UIRefreshService.RefreshAll();
                 return;
             }

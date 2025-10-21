@@ -20,7 +20,11 @@ namespace IFC.Systems.UI
         {
             if (gameLoop == null)
             {
-                gameLoop = FindObjectOfType<GameLoop>();
+#if UNITY_2023_1_OR_NEWER
+                gameLoop = Object.FindFirstObjectByType<GameLoop>();
+#else
+                gameLoop = Object.FindObjectOfType<GameLoop>();
+#endif
             }
 
             if (buildingCards.Count == 0)

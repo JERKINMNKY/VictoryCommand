@@ -1,5 +1,6 @@
 using System.Text;
 using UnityEngine;
+using IFC.Data;
 using IFC.Systems.Officers;
 
 // Layer: Core Simulation
@@ -93,7 +94,7 @@ namespace IFC.Systems
             return true;
         }
 
-        private bool ApplyResourceProduction(CityState city, BuildingFunctionState function, out int produced, out ResourceType resourceType)
+        private bool ApplyResourceProduction(CityState city, BuildingFunctionState function, out int produced, out IFC.Data.ResourceType resourceType)
         {
             produced = Mathf.RoundToInt(function.amountPerTick);
             resourceType = function.resourceType;
