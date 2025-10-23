@@ -1,0 +1,757 @@
+{
+  "schemaVersion": 1,
+  "costCurveExponent": 1.25,
+  "timeCurveMultiplier": 1.3,
+  "buildings": [
+    {
+      "id": "TownHall",
+      "displayName": "Town Hall",
+      "category": "Core",
+      "maxLevel": 20,
+      "uniquePerCity": true,
+      "tiles": 4,
+      "townHallRequired": 1,
+      "maxPerCity": 1,
+      "baseTimeSeconds": 600,
+      "baseCosts": [
+        { "resource": "Food", "amount": 2000 },
+        { "resource": "Steel", "amount": 1200 },
+        { "resource": "Oil", "amount": 600 },
+        { "resource": "RareMetal", "amount": 200 }
+      ],
+      "levelOverrides": [
+        { "level": 10, "timeMultiplier": 1.1 },
+        { "level": 15, "timeMultiplier": 1.2 },
+        { "level": 20, "timeMultiplier": 1.3 }
+      ],
+      "effects": [
+        { "type": "TileCap", "perLevel": 2, "minLevel": 1, "maxLevel": 10 },
+        { "type": "TileCap", "perLevel": 1, "minLevel": 11 },
+        { "type": "TokenGate", "minLevel": 10 },
+        { "type": "SlotUnlock", "slotType": "UltraEnergy", "level": 11 },
+        { "type": "SlotUnlock", "slotType": "Airfield", "level": 13 },
+        { "type": "SlotUnlock", "slotType": "NavalDock", "level": 15 }
+      ]
+    },
+    {
+      "id": "CommandHQ",
+      "displayName": "Command HQ",
+      "category": "Core",
+      "maxLevel": 20,
+      "uniquePerCity": true,
+      "tiles": 2,
+      "townHallRequired": 2,
+      "maxPerCity": 1,
+      "baseTimeSeconds": 480,
+      "baseCosts": [
+        { "resource": "Food", "amount": 1200 },
+        { "resource": "Steel", "amount": 1600 },
+        { "resource": "Oil", "amount": 600 }
+      ],
+      "prerequisites": [
+        { "buildingId": "TownHall", "minLevel": 2 }
+      ],
+      "effects": [
+        { "type": "MarchSlots", "levels": [1, 3, 6, 9, 12, 15, 18], "amount": 1 },
+        { "type": "TransportQueues", "levels": [5, 10, 15, 20], "amount": 1 }
+      ]
+    },
+    {
+      "id": "StaffBureau",
+      "displayName": "Staff Bureau",
+      "category": "Core",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 3,
+      "maxPerCity": 1,
+      "baseTimeSeconds": 360,
+      "baseCosts": [
+        { "resource": "Food", "amount": 800 },
+        { "resource": "Steel", "amount": 1000 },
+        { "resource": "Oil", "amount": 300 }
+      ],
+      "prerequisites": [
+        { "buildingId": "TownHall", "minLevel": 3 },
+        { "buildingId": "CommandHQ", "minLevel": 2 }
+      ],
+      "effects": [
+        { "type": "OfficerCap", "perLevel": 1 },
+        { "type": "OfficerBonus", "bonusType": "ConstructionSpeed", "perLevel": 0.03 },
+        { "type": "OfficerBonus", "bonusType": "Production", "perLevel": 0.03 }
+      ]
+    },
+    {
+      "id": "LogisticsOffice",
+      "displayName": "Logistics Office",
+      "category": "Core",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 4,
+      "maxPerCity": 1,
+      "baseTimeSeconds": 420,
+      "baseCosts": [
+        { "resource": "Food", "amount": 900 },
+        { "resource": "Steel", "amount": 900 },
+        { "resource": "Oil", "amount": 500 }
+      ],
+      "prerequisites": [
+        { "buildingId": "TownHall", "minLevel": 4 },
+        { "buildingId": "CommandHQ", "minLevel": 3 }
+      ],
+      "effects": [
+        { "type": "TransportSpeed", "perLevel": 0.03 },
+        { "type": "TransportCapacity", "perLevel": 0.05 },
+        { "type": "UnlockBuilding", "buildingId": "TransportHub", "level": 5 }
+      ]
+    },
+    {
+      "id": "OfficerQuarters",
+      "displayName": "Officer Quarters",
+      "category": "Core",
+      "maxLevel": 10,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 3,
+      "maxPerCity": 4,
+      "baseTimeSeconds": 240,
+      "baseCosts": [
+        { "resource": "Food", "amount": 600 },
+        { "resource": "Steel", "amount": 400 },
+        { "resource": "Oil", "amount": 200 }
+      ],
+      "prerequisites": [
+        { "buildingId": "StaffBureau", "minLevel": 3 }
+      ],
+      "effects": [
+        { "type": "OfficerMoraleFloor", "perLevel": 0.02 }
+      ]
+    },
+    {
+      "id": "Warehouse",
+      "displayName": "Storage Vault",
+      "category": "Economy",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 2,
+      "maxPerCity": 0,
+      "baseTimeSeconds": 180,
+      "baseCosts": [
+        { "resource": "Food", "amount": 500 },
+        { "resource": "Steel", "amount": 600 }
+      ],
+      "effects": [
+        { "type": "StorageBonus", "baseAmount": 2000, "amountPerLevel": 1200 }
+      ]
+    },
+    {
+      "id": "Farm",
+      "displayName": "Hydroponic Farm",
+      "category": "Economy",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 2,
+      "maxPerCity": 12,
+      "baseTimeSeconds": 150,
+      "baseCosts": [
+        { "resource": "Steel", "amount": 300 }
+      ],
+      "effects": [
+        { "type": "ResourceProduction", "resource": "Food", "baseAmount": 20, "amountPerLevel": 18 }
+      ]
+    },
+    {
+      "id": "SteelFoundry",
+      "displayName": "Steel Foundry",
+      "category": "Economy",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 3,
+      "maxPerCity": 0,
+      "baseTimeSeconds": 180,
+      "baseCosts": [
+        { "resource": "Food", "amount": 300 },
+        { "resource": "Oil", "amount": 200 }
+      ],
+      "effects": [
+        { "type": "ResourceProduction", "resource": "Steel", "baseAmount": 18, "amountPerLevel": 16 }
+      ]
+    },
+    {
+      "id": "OilRefinery",
+      "displayName": "Oil Refinery",
+      "category": "Economy",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 4,
+      "maxPerCity": 0,
+      "baseTimeSeconds": 210,
+      "baseCosts": [
+        { "resource": "Food", "amount": 250 },
+        { "resource": "Steel", "amount": 200 }
+      ],
+      "effects": [
+        { "type": "ResourceProduction", "resource": "Oil", "baseAmount": 15, "amountPerLevel": 14 }
+      ]
+    },
+    {
+      "id": "RareMine",
+      "displayName": "Rare Metal Mine",
+      "category": "Economy",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 5,
+      "maxPerCity": 0,
+      "baseTimeSeconds": 240,
+      "baseCosts": [
+        { "resource": "Food", "amount": 200 },
+        { "resource": "Steel", "amount": 300 }
+      ],
+      "prerequisites": [
+        { "buildingId": "ResearchLab", "minLevel": 2 }
+      ],
+      "effects": [
+        { "type": "ResourceProduction", "resource": "RareMetal", "baseAmount": 8, "amountPerLevel": 7 }
+      ]
+    },
+    {
+      "id": "PowerPlant",
+      "displayName": "Power Plant",
+      "category": "Economy",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 4,
+      "baseTimeSeconds": 260,
+      "baseCosts": [
+        { "resource": "Food", "amount": 400 },
+        { "resource": "Steel", "amount": 500 },
+        { "resource": "Oil", "amount": 300 }
+      ],
+      "effects": [
+        { "type": "EnergyRating", "perLevel": 0.02 }
+      ]
+    },
+    {
+      "id": "TradePort",
+      "displayName": "Trade Port",
+      "category": "Economy",
+      "maxLevel": 15,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 4,
+      "baseTimeSeconds": 220,
+      "baseCosts": [
+        { "resource": "Food", "amount": 350 },
+        { "resource": "Steel", "amount": 350 },
+        { "resource": "Oil", "amount": 200 }
+      ],
+      "effects": [
+        { "type": "ResourceExchange", "resource": "Food", "targetResource": "Oil", "baseAmount": 150, "amountPerLevel": 50, "baseRate": 0.25, "ratePerLevel": 0.02, "maxRate": 0.75 }
+      ]
+    },
+    {
+      "id": "SupplyDepot",
+      "displayName": "Supply Depot",
+      "category": "Logistics",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 3,
+      "baseTimeSeconds": 200,
+      "baseCosts": [
+        { "resource": "Food", "amount": 550 },
+        { "resource": "Steel", "amount": 650 }
+      ],
+      "effects": [
+        { "type": "StorageBonusPercent", "perLevel": 0.05 },
+        { "type": "MarchPayload", "perLevel": 0.02 }
+      ]
+    },
+    {
+      "id": "TransportHub",
+      "displayName": "Transport Hub",
+      "category": "Logistics",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 5,
+      "baseTimeSeconds": 400,
+      "baseCosts": [
+        { "resource": "Food", "amount": 700 },
+        { "resource": "Steel", "amount": 900 },
+        { "resource": "Oil", "amount": 500 }
+      ],
+      "prerequisites": [
+        { "buildingId": "CommandHQ", "minLevel": 5 },
+        { "buildingId": "LogisticsOffice", "minLevel": 6 }
+      ],
+      "effects": [
+        { "type": "TransportRoutes", "levels": [1, 4, 7, 10, 13, 15], "amount": 1 }
+      ]
+    },
+    {
+      "id": "AerialRelay",
+      "displayName": "Aerial Relay",
+      "category": "Logistics",
+      "maxLevel": 10,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 6,
+      "baseTimeSeconds": 360,
+      "baseCosts": [
+        { "resource": "Food", "amount": 500 },
+        { "resource": "Steel", "amount": 600 },
+        { "resource": "Oil", "amount": 800 }
+      ],
+      "prerequisites": [
+        { "buildingId": "Airfield", "minLevel": 2 }
+      ],
+      "effects": [
+        { "type": "AirDispatchCooldown", "perLevel": 0.05 }
+      ]
+    },
+    {
+      "id": "Barracks",
+      "displayName": "Barracks",
+      "category": "Military",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 3,
+      "baseTimeSeconds": 180,
+      "baseCosts": [
+        { "resource": "Food", "amount": 400 },
+        { "resource": "Steel", "amount": 500 }
+      ],
+      "effects": [
+        { "type": "TrainingSpeed", "targetFacility": "Barracks", "baseMultiplier": 0.96, "perLevelDelta": -0.01, "minMultiplier": 0.7 }
+      ]
+    },
+    {
+      "id": "ArmsPlant",
+      "displayName": "Arms Plant",
+      "category": "Military",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 3,
+      "baseTimeSeconds": 220,
+      "baseCosts": [
+        { "resource": "Food", "amount": 600 },
+        { "resource": "Steel", "amount": 700 },
+        { "resource": "Oil", "amount": 200 }
+      ],
+      "prerequisites": [
+        { "buildingId": "Barracks", "minLevel": 3 }
+      ],
+      "effects": [
+        { "type": "TrainingSpeed", "targetFacility": "ArmsPlant", "baseMultiplier": 0.95, "perLevelDelta": -0.008, "minMultiplier": 0.65 }
+      ]
+    },
+    {
+      "id": "VehicleFactory",
+      "displayName": "Vehicle Factory",
+      "category": "Military",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 5,
+      "baseTimeSeconds": 300,
+      "baseCosts": [
+        { "resource": "Food", "amount": 700 },
+        { "resource": "Steel", "amount": 900 },
+        { "resource": "Oil", "amount": 600 }
+      ],
+      "prerequisites": [
+        { "buildingId": "ArmsPlant", "minLevel": 5 },
+        { "buildingId": "PowerPlant", "minLevel": 4 }
+      ],
+      "effects": [
+        { "type": "TrainingSpeed", "targetFacility": "VehicleFactory", "baseMultiplier": 0.95, "perLevelDelta": -0.007, "minMultiplier": 0.68 }
+      ]
+    },
+    {
+      "id": "Airfield",
+      "displayName": "Airfield",
+      "category": "Military",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 2,
+      "townHallRequired": 6,
+      "baseTimeSeconds": 360,
+      "baseCosts": [
+        { "resource": "Food", "amount": 900 },
+        { "resource": "Steel", "amount": 1100 },
+        { "resource": "Oil", "amount": 900 }
+      ],
+      "prerequisites": [
+        { "buildingId": "CommandHQ", "minLevel": 6 }
+      ],
+      "effects": [
+        { "type": "TrainingSpeed", "targetFacility": "Airfield", "baseMultiplier": 0.95, "perLevelDelta": -0.008, "minMultiplier": 0.7 }
+      ]
+    },
+    {
+      "id": "NavalYard",
+      "displayName": "Naval Yard",
+      "category": "Military",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 3,
+      "townHallRequired": 7,
+      "baseTimeSeconds": 480,
+      "baseCosts": [
+        { "resource": "Food", "amount": 1200 },
+        { "resource": "Steel", "amount": 1500 },
+        { "resource": "Oil", "amount": 1300 },
+        { "resource": "RareMetal", "amount": 200 }
+      ],
+      "prerequisites": [
+        { "buildingId": "TradePort", "minLevel": 4 }
+      ],
+      "effects": [
+        { "type": "TrainingSpeed", "targetFacility": "NavalYard", "baseMultiplier": 0.96, "perLevelDelta": -0.006, "minMultiplier": 0.72 }
+      ]
+    },
+    {
+      "id": "MissileSilo",
+      "displayName": "Missile Silo",
+      "category": "Military",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 2,
+      "townHallRequired": 8,
+      "baseTimeSeconds": 540,
+      "baseCosts": [
+        { "resource": "Food", "amount": 800 },
+        { "resource": "Steel", "amount": 1400 },
+        { "resource": "Oil", "amount": 1000 },
+        { "resource": "RareMetal", "amount": 600 }
+      ],
+      "prerequisites": [
+        { "buildingId": "ResearchLab", "minLevel": 5 },
+        { "buildingId": "PowerPlant", "minLevel": 7 }
+      ],
+      "effects": [
+        { "type": "TrainingSpeed", "targetFacility": "MissileSilo", "baseMultiplier": 0.94, "perLevelDelta": -0.008, "minMultiplier": 0.68 },
+        { "type": "UnlockMission", "missionId": "MissileStrike" }
+      ]
+    },
+    {
+      "id": "DroneLab",
+      "displayName": "Drone Lab",
+      "category": "Military",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 8,
+      "baseTimeSeconds": 520,
+      "baseCosts": [
+        { "resource": "Food", "amount": 900 },
+        { "resource": "Steel", "amount": 1000 },
+        { "resource": "Oil", "amount": 1200 },
+        { "resource": "RareMetal", "amount": 800 }
+      ],
+      "prerequisites": [
+        { "buildingId": "ResearchLab", "minLevel": 6 },
+        { "buildingId": "Airfield", "minLevel": 8 }
+      ],
+      "effects": [
+        { "type": "TrainingSpeed", "targetFacility": "DroneLab", "baseMultiplier": 0.95, "perLevelDelta": -0.009, "minMultiplier": 0.7 },
+        { "type": "IntelRange", "perLevel": 0.02 }
+      ]
+    },
+    {
+      "id": "Workshop",
+      "displayName": "Workshop",
+      "category": "MilitarySupport",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 5,
+      "baseTimeSeconds": 260,
+      "baseCosts": [
+        { "resource": "Food", "amount": 500 },
+        { "resource": "Steel", "amount": 700 },
+        { "resource": "Oil", "amount": 300 }
+      ],
+      "prerequisites": [
+        { "buildingId": "VehicleFactory", "minLevel": 4 }
+      ],
+      "effects": [
+        { "type": "TrainingUpkeep", "perLevel": -0.02 },
+        { "type": "MaintenanceCost", "perLevel": -0.01 }
+      ]
+    },
+    {
+      "id": "Academy",
+      "displayName": "Officer Academy",
+      "category": "MilitarySupport",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 5,
+      "baseTimeSeconds": 240,
+      "baseCosts": [
+        { "resource": "Food", "amount": 400 },
+        { "resource": "Steel", "amount": 600 },
+        { "resource": "Oil", "amount": 200 }
+      ],
+      "prerequisites": [
+        { "buildingId": "StaffBureau", "minLevel": 5 }
+      ],
+      "effects": [
+        { "type": "OfficerXp", "perLevel": 0.05 },
+        { "type": "UnlockRecruitment", "level": 10 }
+      ]
+    },
+    {
+      "id": "Hospital",
+      "displayName": "Field Hospital",
+      "category": "MilitarySupport",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 5,
+      "baseTimeSeconds": 220,
+      "baseCosts": [
+        { "resource": "Food", "amount": 500 },
+        { "resource": "Steel", "amount": 400 },
+        { "resource": "Oil", "amount": 300 }
+      ],
+      "prerequisites": [
+        { "buildingId": "Barracks", "minLevel": 6 }
+      ],
+      "effects": [
+        { "type": "CasualtyRecovery", "perLevel": 0.02 },
+        { "type": "MoraleDecayReduction", "perLevel": 0.01 }
+      ]
+    },
+    {
+      "id": "CommandTower",
+      "displayName": "Command Tower",
+      "category": "MilitarySupport",
+      "maxLevel": 10,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 6,
+      "baseTimeSeconds": 320,
+      "baseCosts": [
+        { "resource": "Food", "amount": 600 },
+        { "resource": "Steel", "amount": 800 },
+        { "resource": "Oil", "amount": 400 },
+        { "resource": "RareMetal", "amount": 200 }
+      ],
+      "prerequisites": [
+        { "buildingId": "CommandHQ", "minLevel": 8 }
+      ],
+      "effects": [
+        { "type": "QueueControl", "perLevel": 1 }
+      ]
+    },
+    {
+      "id": "ResearchLab",
+      "displayName": "Research Lab",
+      "category": "Research",
+      "maxLevel": 20,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 4,
+      "baseTimeSeconds": 300,
+      "baseCosts": [
+        { "resource": "Food", "amount": 500 },
+        { "resource": "Steel", "amount": 800 },
+        { "resource": "Oil", "amount": 400 },
+        { "resource": "RareMetal", "amount": 200 }
+      ],
+      "effects": [
+        { "type": "ResearchQueue", "levels": [1, 5, 10, 15, 20], "amount": 1 }
+      ]
+    },
+    {
+      "id": "AdvancedLab",
+      "displayName": "Quantum Lab",
+      "category": "Research",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 8,
+      "baseTimeSeconds": 420,
+      "baseCosts": [
+        { "resource": "Food", "amount": 700 },
+        { "resource": "Steel", "amount": 1100 },
+        { "resource": "Oil", "amount": 700 },
+        { "resource": "RareMetal", "amount": 600 }
+      ],
+      "prerequisites": [
+        { "buildingId": "ResearchLab", "minLevel": 8 },
+        { "buildingId": "PowerPlant", "minLevel": 10 }
+      ],
+      "effects": [
+        { "type": "UnlockResearchBranch", "branchId": "DarkEnergy" }
+      ]
+    },
+    {
+      "id": "Wall",
+      "displayName": "Fortress Wall",
+      "category": "Defense",
+      "maxLevel": 20,
+      "uniquePerCity": true,
+      "tiles": 0,
+      "townHallRequired": 2,
+      "baseTimeSeconds": 200,
+      "baseCosts": [
+        { "resource": "Food", "amount": 300 },
+        { "resource": "Steel", "amount": 500 },
+        { "resource": "Oil", "amount": 200 }
+      ],
+      "effects": [
+        { "type": "WallHp", "baseAmount": 1000, "amountPerLevel": 200 },
+        { "type": "FortificationSlots", "levels": [5, 10, 15], "amount": 1 }
+      ]
+    },
+    {
+      "id": "Turret",
+      "displayName": "Artillery Turret",
+      "category": "Defense",
+      "maxLevel": 20,
+      "uniquePerCity": false,
+      "tiles": 1,
+      "townHallRequired": 5,
+      "baseTimeSeconds": 260,
+      "baseCosts": [
+        { "resource": "Food", "amount": 400 },
+        { "resource": "Steel", "amount": 800 },
+        { "resource": "Oil", "amount": 400 },
+        { "resource": "RareMetal", "amount": 150 }
+      ],
+      "prerequisites": [
+        { "buildingId": "Wall", "minLevel": 5 }
+      ],
+      "effects": [
+        { "type": "DefenseDamage", "perLevel": 0.04 }
+      ]
+    },
+    {
+      "id": "ShieldGenerator",
+      "displayName": "Shield Generator",
+      "category": "Defense",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 2,
+      "townHallRequired": 7,
+      "baseTimeSeconds": 360,
+      "baseCosts": [
+        { "resource": "Food", "amount": 600 },
+        { "resource": "Steel", "amount": 1000 },
+        { "resource": "Oil", "amount": 800 },
+        { "resource": "RareMetal", "amount": 700 }
+      ],
+      "prerequisites": [
+        { "buildingId": "PowerPlant", "minLevel": 6 },
+        { "buildingId": "Wall", "minLevel": 8 }
+      ],
+      "effects": [
+        { "type": "DamageMitigation", "perLevel": 0.02 }
+      ]
+    },
+    {
+      "id": "SensorArray",
+      "displayName": "Sensor Array",
+      "category": "Defense",
+      "maxLevel": 15,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 5,
+      "baseTimeSeconds": 280,
+      "baseCosts": [
+        { "resource": "Food", "amount": 300 },
+        { "resource": "Steel", "amount": 600 },
+        { "resource": "Oil", "amount": 500 }
+      ],
+      "prerequisites": [
+        { "buildingId": "ResearchLab", "minLevel": 4 }
+      ],
+      "effects": [
+        { "type": "IntelRange", "perLevel": 0.02 },
+        { "type": "MarchWarning", "perLevel": 3 }
+      ]
+    },
+    {
+      "id": "UltraConverter",
+      "displayName": "Ultra Converter",
+      "category": "LateGame",
+      "maxLevel": 10,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 11,
+      "baseTimeSeconds": 480,
+      "baseCosts": [
+        { "resource": "Food", "amount": 800 },
+        { "resource": "Steel", "amount": 1200 },
+        { "resource": "Oil", "amount": 900 },
+        { "resource": "RareMetal", "amount": 900 },
+        { "resource": "DarkEnergy", "amount": 50 }
+      ],
+      "prerequisites": [
+        { "buildingId": "PowerPlant", "minLevel": 12 },
+        { "buildingId": "CommandTower", "minLevel": 6 }
+      ],
+      "effects": [
+        { "type": "ConversionUnlock", "perLevel": 1 }
+      ]
+    },
+    {
+      "id": "DarkReactor",
+      "displayName": "Dark Energy Reactor",
+      "category": "LateGame",
+      "maxLevel": 10,
+      "uniquePerCity": true,
+      "tiles": 2,
+      "townHallRequired": 12,
+      "baseTimeSeconds": 540,
+      "baseCosts": [
+        { "resource": "Food", "amount": 900 },
+        { "resource": "Steel", "amount": 1300 },
+        { "resource": "Oil", "amount": 1200 },
+        { "resource": "RareMetal", "amount": 1100 }
+      ],
+      "prerequisites": [
+        { "buildingId": "UltraConverter", "minLevel": 3 },
+        { "buildingId": "AdvancedLab", "minLevel": 4 }
+      ],
+      "effects": [
+        { "type": "ResourceProduction", "resource": "DarkEnergy", "baseAmount": 5, "amountPerLevel": 1 }
+      ]
+    },
+    {
+      "id": "TokenForge",
+      "displayName": "Upgrade Token Forge",
+      "category": "LateGame",
+      "maxLevel": 10,
+      "uniquePerCity": true,
+      "tiles": 1,
+      "townHallRequired": 10,
+      "baseTimeSeconds": 360,
+      "baseCosts": [
+        { "resource": "Food", "amount": 700 },
+        { "resource": "Steel", "amount": 900 },
+        { "resource": "Oil", "amount": 700 },
+        { "resource": "RareMetal", "amount": 600 }
+      ],
+      "prerequisites": [
+        { "buildingId": "ResearchLab", "minLevel": 7 }
+      ],
+      "effects": [
+        { "type": "TokenGeneration", "baseSeconds": 3600, "multiplierPerLevel": 0.95 }
+      ]
+    }
+  ]
+}

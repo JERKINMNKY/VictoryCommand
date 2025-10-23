@@ -8,7 +8,12 @@ namespace IFC.Data
         Core,
         Military,
         Resource,
-        Endgame
+        Logistics,
+        Support,
+        Research,
+        Defense,
+        Endgame,
+        LateGame
     }
 
     [System.Serializable]

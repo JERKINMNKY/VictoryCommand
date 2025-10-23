@@ -81,3 +81,20 @@ Layer focus: Core Simulation | Life Domains: Autonomy, Security, Logistics
 - Auto-spawn UGUI MVP via `CityUIBootstrap` (top bar, four building cards, tile footer, toast overlay) and refresh after each tick.
 - Document quick verification: add `DevActionsBehaviour`, right-click context to hit caps/prereqs, run scene to observe UI upgrades and mission rewards.
 - War2Victory reference: consulted `War2V_Decompiled/assets/cache/extracted/gamecaches/main/17297588590134.json` (tile unlock cadence) and related cache entries for blueprint/token gating behavior.
+Recent Changes (October 2025)
+- Start Profile workflow
+  - Added importer to create `StartProfileAsset` from JSON (Tools → Profiles → Import Start Profile). See files under `Assets/Editor/StartProfileImporter.cs` and `Assets/Scripts/Systems/Profiles/StartProfile*`.
+  - Added editor drawer to select building IDs from the data catalog instead of free text when editing a start profile (`StartProfileBuildingLevelDrawer`).
+  - Default new‑player scaffold applied when data is sparse: Capital city with TownHall 1, CommandHQ 1, StaffBureau 1, commander as mayor, baseline stockpile, and tile caps 1–10.
+- UI boot reliability
+  - Defer UI bootstrap until after game state + catalogs load, preventing early “missing building” warnings and ensuring canvases spawn predictably.
+  - Unity 2023 font fallback: use `LegacyRuntime.ttf`/Arial OS when built‑in Arial is unavailable.
+- Data resilience
+  - JSON parsing now trims BOM/zero‑width characters to avoid profile parse failures.
+- Content validation
+  - Tools → Validate Content IDs checks profile/seed building IDs against `content/data/buildings.json` and flags legacy identifiers.
+
+Short Verification Checklist
+- Create/import a `StartProfileAsset` and assign it on `GameLoop`.
+- Press Play and confirm the UI canvas appears with top bar, 4 building cards, tile footer, and tick logs.
+- Use DevActionsBehaviour context menu to grant resources/tokens, place buildings, enqueue upgrades, and advance ticks.

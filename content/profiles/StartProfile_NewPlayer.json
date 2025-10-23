@@ -4,8 +4,8 @@
     "id": "Capital",
     "buildings": {
       "TownHall": 1,
-      "GeneralHQ": 1,
-      "MilitaryInstitute": 1,
+      "CommandHQ": 1,
+      "StaffBureau": 1,
       "Wall": 0
     },
     "stockpile": {

@@ -53,8 +53,8 @@
       ],
       "buildings": [
         { "buildingType": "TownHall", "level": 10 },
-        { "buildingType": "GeneralHQ", "level": 9 },
-        { "buildingType": "MilitaryInstitute", "level": 8 },
+        { "buildingType": "CommandHQ", "level": 9 },
+        { "buildingType": "StaffBureau", "level": 8 },
         { "buildingType": "Wall", "level": 7 }
       ],
       "officers": [
@@ -139,8 +139,8 @@
       ],
       "buildings": [
         { "buildingType": "TownHall", "level": 9 },
-        { "buildingType": "GeneralHQ", "level": 8 },
-        { "buildingType": "MilitaryInstitute", "level": 7 },
+        { "buildingType": "CommandHQ", "level": 8 },
+        { "buildingType": "StaffBureau", "level": 7 },
         { "buildingType": "Wall", "level": 6 }
       ],
       "officers": [
@@ -214,8 +214,8 @@
       ],
       "buildings": [
         { "buildingType": "TownHall", "level": 11 },
-        { "buildingType": "GeneralHQ", "level": 9 },
-        { "buildingType": "MilitaryInstitute", "level": 8 },
+        { "buildingType": "CommandHQ", "level": 9 },
+        { "buildingType": "StaffBureau", "level": 8 },
         { "buildingType": "Wall", "level": 9 }
       ],
       "officers": [

@@ -47,5 +47,17 @@ namespace IFC.Systems
         {
             DevActions.AdvanceTicks(Loop, advanceTicksCount);
         }
+
+        [ContextMenu("Dev/Dump Building IDs")]
+        private void ContextDumpBuildingIds()
+        {
+            DevActions.DumpBuildingIds(Loop);
+        }
+
+        [ContextMenu("Dev/Dump City Summary")]
+        private void ContextDumpCitySummary()
+        {
+            DevActions.DumpCitySummary(Loop);
+        }
     }
 }

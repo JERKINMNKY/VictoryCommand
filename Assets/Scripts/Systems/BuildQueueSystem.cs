@@ -18,6 +18,7 @@ namespace IFC.Systems
         [SerializeField] private bool verboseLogging = false;
         private GameState _state;
         private BuildingCatalog _buildingCatalog;
+        private BuildingEffectRuntime _effectRuntime;
 
         public void Initialize(GameState state)
         {
@@ -27,6 +28,11 @@ namespace IFC.Systems
         public void SetBuildingCatalog(BuildingCatalog catalog)
         {
             _buildingCatalog = catalog;
+        }
+
+        public void SetEffectRuntime(BuildingEffectRuntime runtime)
+        {
+            _effectRuntime = runtime;
         }
 
         public void ProcessTick(int secondsPerTick)
@@ -71,6 +77,7 @@ namespace IFC.Systems
                     {
                         completedThisTick++;
                         city.SetBuildingLevel(order.buildingType, order.targetLevel);
+                        _effectRuntime?.RebuildBuilding(city.cityId, order.buildingType);
                         GameEventHub.Publish(new BuildingUpgradedEvent
                         {
                             cityId = city.cityId,

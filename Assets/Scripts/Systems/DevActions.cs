@@ -116,5 +116,41 @@ namespace IFC.Systems
             Debug.Log($"[Dev] Advanced simulation by {ticks} tick(s).");
             UIRefreshService.RefreshAll();
         }
+
+        public static void DumpBuildingIds(GameLoop loop)
+        {
+            if (loop == null)
+            {
+                Debug.LogWarning("[Dev] Loop is null.");
+                return;
+            }
+            var keys = loop.BuildingCatalog?.GetAllKeys();
+            if (keys == null)
+            {
+                Debug.LogWarning("[Dev] BuildingCatalog not initialised.");
+                return;
+            }
+            Debug.Log("[Dev] Building IDs:\n - " + string.Join("\n - ", keys));
+        }
+
+        public static void DumpCitySummary(GameLoop loop)
+        {
+            if (loop?.CurrentState == null)
+            {
+                Debug.LogWarning("[Dev] No state to dump.");
+                return;
+            }
+            foreach (var city in loop.CurrentState.cities)
+            {
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.AppendLine($"[Dev] City {city.cityId} ({city.displayName})");
+                for (int i = 0; i < city.buildings.Count; i++)
+                {
+                    var b = city.buildings[i];
+                    sb.AppendLine($"  - {b.buildingKey}: L{b.level}");
+                }
+                Debug.Log(sb.ToString());
+            }
+        }
     }
 }

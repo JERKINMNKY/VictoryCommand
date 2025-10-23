@@ -18,6 +18,7 @@ namespace IFC.Systems
         public int secondsPerTick = 60;
         public string seedFileName = "game_state.json";
         [SerializeField] private bool useStartProfile = false;
+        [SerializeField] private bool logBuildingIdsOnStart = false;
         [SerializeField] private StartProfileAsset startProfileAsset;
         [SerializeField] private string startProfileJsonPath = "content/profiles/StartProfile_NewPlayer.json";
 
@@ -32,11 +33,13 @@ namespace IFC.Systems
         private MissionSystem _missionSystem;
         private BattleSystem _battleSystem;
         private BuildingFunctionSystem _buildingFunctionSystem;
+        private BuildingEffectRuntime _buildingEffectRuntime;
         private StatModifierRegistry _statModifiers;
         private readonly Dictionary<string, OfficerAssignmentView> _officerAssignmentViews = new Dictionary<string, OfficerAssignmentView>();
         private IOfficerStatsProvider _officerStatsProvider;
         private readonly BuildingCatalog _buildingCatalog = new BuildingCatalog();
         private BuildController _buildController;
+        private bool _buildingDefinitionsLoaded;
 
         public GameState CurrentState => _state;
         public BuildController BuildController => _buildController;
@@ -53,9 +56,9 @@ namespace IFC.Systems
             _missionSystem = GetOrCreate<MissionSystem>();
             _battleSystem = GetOrCreate<BattleSystem>();
             _buildingFunctionSystem = GetOrCreate<BuildingFunctionSystem>();
-            GetOrCreate<CityUIBootstrap>();
-            GetOrCreate<DevActionsBehaviour>();
-
+            _buildingEffectRuntime = GetOrCreate<BuildingEffectRuntime>();
+            // Defer UI bootstrap and dev helpers until after state + catalogs are loaded
+            
             LoadSeed();
         }
 
@@ -112,17 +115,24 @@ namespace IFC.Systems
             _buildQueueSystem.Initialize(_state);
             EnsureBuildingCatalog();
             _buildQueueSystem.SetBuildingCatalog(_buildingCatalog);
+            if (logBuildingIdsOnStart) { DevActions.DumpBuildingIds(this); DevActions.DumpCitySummary(this); }
+            _buildQueueSystem.SetEffectRuntime(_buildingEffectRuntime);
             _buildController = new BuildController(_state, _buildingCatalog, _state.inventory, _state.tileCaps);
             _statModifiers = new StatModifierRegistry();
             BuildOfficerAssignmentViews();
             _trainingSystem.Initialize(_state, _statModifiers);
             _buildingFunctionSystem.Initialize(_state, _statModifiers);
+            _buildingEffectRuntime.Initialize(_state, _buildingCatalog);
             _autoTransportSystem.Initialize(_state);
             _defenseSystem.Initialize(_state);
             _mapSystem.Initialize(_state);
             _missionSystem.Initialize(_state);
             _battleSystem.Initialize(_state);
             _timer = 0f;
+
+            // Ensure UI and dev helpers exist after systems and catalogs are initialized
+            GetOrCreate<CityUIBootstrap>();
+            GetOrCreate<DevActionsBehaviour>();
 
             Debug.Log($"[GameLoop] Loaded state ({source}) with {_state.cities.Count} cities.");
         }
@@ -228,6 +238,20 @@ namespace IFC.Systems
 
         private void EnsureBuildingCatalog()
         {
+            if (!_buildingDefinitionsLoaded)
+            {
+                var definitionCollection = BuildingDefinitionLoader.LoadFromJson();
+                if (definitionCollection != null)
+                {
+                    _buildingCatalog.LoadDefinitions(definitionCollection);
+                    _buildingDefinitionsLoaded = true;
+                }
+                else
+                {
+                    Debug.LogWarning("[GameLoop] Building definition collection failed to load; falling back to legacy ScriptableObjects.");
+                }
+            }
+
             BuildingData[] definitions = Resources.LoadAll<BuildingData>("ScriptableObjects/Buildings");
             if (definitions == null || definitions.Length == 0)
             {

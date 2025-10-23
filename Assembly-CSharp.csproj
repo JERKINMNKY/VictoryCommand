@@ -49,7 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Systems\AutoTransportSystem.cs" />
-    <Compile Include="Assets\ScriptableObjects\Buildings\GeneralHQData.cs" />
     <Compile Include="Assets\Scripts\Systems\BuildFail.cs" />
     <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\InteriorControllerInspector.cs" />
     <Compile Include="Assets\Scripts\UI\ToastView.cs" />
@@ -98,6 +97,7 @@
     <Compile Include="Assets\ThirdParty\FreeOpenBuilding_1.1.2\FOB_1\Scripts\DoorMech.cs" />
     <Compile Include="Assets\Scripts\Systems\Util\MiniJSON.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\HospitalData.cs" />
+    <Compile Include="Assets\ScriptableObjects\Buildings\CommandHQData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\OilFieldData.cs" />
     <Compile Include="Assets\Tests\EditMode\BuildRulesTests.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ArmsPlantData.cs" />
@@ -106,11 +106,13 @@
     <Compile Include="Assets\ScriptableObjects\Buildings\AcademyData.cs" />
     <Compile Include="Assets\Scripts\Systems\BuildingFunctionSystem.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\DockyardData.cs" />
+    <Compile Include="Assets\Tests\EditMode\BuildingCatalogTests.cs" />
     <Compile Include="Assets\Scripts\Systems\ResourceTickService.cs" />
     <Compile Include="Assets\Scripts\Systems\BuildRules.cs" />
     <Compile Include="Assets\Scripts\Systems\ResourceSystem.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\AirportData.cs" />
     <Compile Include="Assets\Scripts\Systems\Profiles\StartProfileAsset.cs" />
+    <Compile Include="Assets\Scripts\Data\BuildingDefinitionModels.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\HouseData.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Building.cs" />
     <Compile Include="Assets\Scripts\Systems\BuildController.cs" />
@@ -119,17 +121,20 @@
     <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\EmissionController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ResearchCenterData.cs" />
     <Compile Include="Assets\Scripts\Systems\CityStateExtensions.cs" />
+    <Compile Include="Assets\Scripts\Data\BuildingDefinitionLoader.cs" />
     <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\EmissionControllerInspector.cs" />
+    <Compile Include="Assets\ScriptableObjects\Buildings\StaffBureauData.cs" />
     <Compile Include="Assets\Scripts\UI\UIRefreshService.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\StaffHQData.cs" />
     <Compile Include="Assets\Scripts\Generated\GameModels.Generated.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\CommandTowerData.cs" />
     <Compile Include="Assets\Scripts\Systems\DevActionsBehaviour.cs" />
     <Compile Include="Assets\Scripts\Systems\BattleSystem.cs" />
+    <Compile Include="Assets\Tests\EditMode\BuildingEffectRuntimeTests.cs" />
     <Compile Include="Assets\Scripts\Data\BuildingData.cs" />
+    <Compile Include="Assets\Scripts\Systems\BuildingEffectRuntime.cs" />
     <Compile Include="Assets\Scripts\Systems\Officers\OfficerStatsProvider.cs" />
     <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\LightController.cs" />
-    <Compile Include="Assets\ScriptableObjects\Buildings\MilitaryInstituteData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\ThirdParty\vrbn_studios\2023_A\Scenes\Readme.txt" />

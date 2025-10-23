@@ -18,7 +18,35 @@ namespace IFC.Systems.Util
                 return null;
             }
 
+            // Be forgiving about BOM/zero-width characters at the start of files
+            // that can appear when editing JSON with various tools on Windows/macOS.
+            // These characters cause the simple parser to return NONE on the first token.
+            json = TrimLeadingControlChars(json);
+
             return Parser.Parse(json);
+        }
+
+        private static string TrimLeadingControlChars(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return s;
+            int i = 0;
+            while (i < s.Length)
+            {
+                char c = s[i];
+                // Remove common problematic leading chars: BOM, zero-width space, non-breaking space
+                if (c == '\uFEFF' || c == '\u200B' || c == '\u00A0')
+                {
+                    i++;
+                    continue;
+                }
+                if (char.IsWhiteSpace(c))
+                {
+                    i++;
+                    continue;
+                }
+                break;
+            }
+            return i > 0 ? s.Substring(i) : s;
         }
 
         public static string Serialize(object obj)

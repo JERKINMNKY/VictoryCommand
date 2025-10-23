@@ -12,7 +12,7 @@ public class CityTileEditor : EditorWindow
     Vector2 scrollPos;
     string lastValidationMessage = string.Empty;
     int filterIndex = 0;
-    string[] filterOptions = new string[] { "Show All", "Core", "Military", "Resource", "Endgame" };
+    string[] filterOptions = new string[] { "Show All", "Core", "Military", "Resource", "Logistics", "Support", "Research", "Defense", "LateGame" };
     bool showGrid = true;
     int selectedTileIndex = -1;
     BuildingData selectedAssignBuilding = null;
@@ -372,7 +372,11 @@ public class CityTileEditor : EditorWindow
             case 1: return t == BuildingType.Core;
             case 2: return t == BuildingType.Military;
             case 3: return t == BuildingType.Resource;
-            case 4: return t == BuildingType.Endgame;
+            case 4: return t == BuildingType.Logistics;
+            case 5: return t == BuildingType.Support;
+            case 6: return t == BuildingType.Research;
+            case 7: return t == BuildingType.Defense;
+            case 8: return t == BuildingType.LateGame || t == BuildingType.Endgame;
             default: return true;
         }
     }

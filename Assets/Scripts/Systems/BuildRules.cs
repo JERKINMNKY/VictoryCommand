@@ -30,6 +30,16 @@ namespace IFC.Systems
                 return false;
             }
 
+            if (!CheckUnlockLevel(city, data, buildingKey, out fail, log))
+            {
+                return false;
+            }
+
+            if (!CheckCityLimits(city, catalog, buildingKey, out fail, log))
+            {
+                return false;
+            }
+
             fail = BuildFail.None;
             return true;
         }
@@ -49,6 +59,16 @@ namespace IFC.Systems
             }
 
             if (!CheckPrerequisites(city, data, buildingKey, out fail, log))
+            {
+                return false;
+            }
+
+            if (!CheckUnlockLevel(city, data, buildingKey, out fail, log))
+            {
+                return false;
+            }
+
+            if (!CheckMaxLevel(catalog, buildingKey, targetLevel, out fail, log))
             {
                 return false;
             }
@@ -128,11 +148,77 @@ namespace IFC.Systems
                 {
                     if (log)
                     {
-                        Debug.Log($"[Build] Locked {buildingKey} Needs {req.buildingType}≥{req.minLevel}");
+                        Debug.Log($"[Build] Locked {buildingKey} Needs {req.buildingType} >= {req.minLevel}");
                     }
                     fail = BuildFail.PrereqNotMet;
                     return false;
                 }
+            }
+
+            return true;
+        }
+
+        private static bool CheckUnlockLevel(CityState city, BuildingData data, string buildingKey, out BuildFail fail, bool log)
+        {
+            fail = BuildFail.None;
+            int townHallLevel = city.GetTownHallLevel();
+            if (data.unlockLevel > townHallLevel)
+            {
+                if (log)
+                {
+                    Debug.Log($"[Build] Locked {buildingKey} Needs TownHall >= {data.unlockLevel}");
+                }
+                fail = BuildFail.PrereqNotMet;
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool CheckCityLimits(CityState city, BuildingCatalog catalog, string buildingKey, out BuildFail fail, bool log)
+        {
+            fail = BuildFail.None;
+            if (!catalog.TryGetDefinition(buildingKey, out var definition))
+            {
+                return true;
+            }
+
+            int currentLevel = city.GetBuildingLevel(buildingKey);
+            if (definition.uniquePerCity && currentLevel > 0)
+            {
+                if (log)
+                {
+                    Debug.Log($"[Build] Locked {buildingKey} Already constructed");
+                }
+                fail = BuildFail.PrereqNotMet;
+                return false;
+            }
+
+            if (definition.maxPerCity == 1 && currentLevel > 0)
+            {
+                if (log)
+                {
+                    Debug.Log($"[Build] Locked {buildingKey} Max instances reached");
+                }
+                fail = BuildFail.PrereqNotMet;
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool CheckMaxLevel(BuildingCatalog catalog, string buildingKey, int targetLevel, out BuildFail fail, bool log)
+        {
+            fail = BuildFail.None;
+            int maxLevel = catalog.GetMaxLevel(buildingKey);
+            if (maxLevel > 0 && targetLevel > maxLevel)
+            {
+                if (log)
+                {
+                    Debug.Log($"[Build] Locked {buildingKey} Max level {maxLevel}");
+                }
+                fail = BuildFail.PrereqNotMet;
+                return false;
             }
 
             return true;

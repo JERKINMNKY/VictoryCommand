@@ -34,7 +34,9 @@ namespace IFC.Systems.Profiles
         {
             if (asset != null)
             {
-                return FromAsset(asset);
+                var def = FromAsset(asset);
+                ApplyDefaultScaffold(def);
+                return def;
             }
 
             if (!string.IsNullOrEmpty(jsonPath))
@@ -48,14 +50,18 @@ namespace IFC.Systems.Profiles
                 if (File.Exists(absolutePath))
                 {
                     string json = File.ReadAllText(absolutePath);
-                    return FromJson(json);
+                    var def = FromJson(json);
+                    ApplyDefaultScaffold(def);
+                    return def;
                 }
 
                 Debug.LogWarning($"[StartProfileLoader] JSON profile not found at {absolutePath}");
             }
 
             Debug.LogWarning("[StartProfileLoader] No profile asset or JSON provided. Using default.");
-            return new StartProfileDefinition();
+            var fallback = new StartProfileDefinition();
+            ApplyDefaultScaffold(fallback);
+            return fallback;
         }
 
         public static StartProfileDefinition FromAsset(StartProfileAsset asset)
@@ -119,6 +125,100 @@ namespace IFC.Systems.Profiles
             }
 
             return definition;
+        }
+
+        /// <summary>
+        /// Ensures a playable new-player baseline when the profile is sparse or missing data.
+        /// Does not overwrite fields that are already populated.
+        /// </summary>
+        public static void ApplyDefaultScaffold(StartProfileDefinition def)
+        {
+            if (def == null)
+            {
+                return;
+            }
+
+            // City identity + tags
+            if (def.startingCity == null)
+            {
+                def.startingCity = new StartProfileCityDefinition();
+            }
+            if (string.IsNullOrEmpty(def.startingCity.id))
+            {
+                def.startingCity.id = "Capital";
+            }
+            if (!def.cityTags.Contains("Capital"))
+            {
+                def.cityTags.Add("Capital");
+            }
+            if (!def.startingCity.tags.Contains("Capital"))
+            {
+                def.startingCity.tags.Add("Capital");
+            }
+
+            // Default mayor/commander assignment
+            if (string.IsNullOrEmpty(def.startingCity.mayorOfficerId))
+            {
+                def.startingCity.mayorOfficerId = "Commander"; // officer id resolves via OfficerData name/asset name
+            }
+
+            // Default buildings
+            if (def.startingCity.buildings == null)
+            {
+                def.startingCity.buildings = new Dictionary<string, int>();
+            }
+            EnsureBuilding(def.startingCity.buildings, "TownHall", 1);
+            EnsureBuilding(def.startingCity.buildings, "CommandHQ", 1);
+            EnsureBuilding(def.startingCity.buildings, "StaffBureau", 1);
+
+            // Stockpile baseline
+            if (def.startingCity.stockpile == null)
+            {
+                def.startingCity.stockpile = new Dictionary<string, int>();
+            }
+            EnsureStock(def.startingCity.stockpile, "Food", 5000);
+            EnsureStock(def.startingCity.stockpile, "Steel", 5000);
+            EnsureStock(def.startingCity.stockpile, "Oil", 5000);
+            EnsureStock(def.startingCity.stockpile, "RareMetal", 800);
+            EnsureStock(def.startingCity.stockpile, "UpgradeToken", 0);
+
+            // Tile caps baseline
+            if (def.tileCaps == null)
+            {
+                def.tileCaps = new TileCapTable();
+            }
+            if (def.tileCaps.entries.Count == 0)
+            {
+                def.tileCaps.entries.AddRange(new[]
+                {
+                    new TileCapEntry{ townHallLevel = 1, maxTiles = 16 },
+                    new TileCapEntry{ townHallLevel = 2, maxTiles = 20 },
+                    new TileCapEntry{ townHallLevel = 3, maxTiles = 24 },
+                    new TileCapEntry{ townHallLevel = 4, maxTiles = 27 },
+                    new TileCapEntry{ townHallLevel = 5, maxTiles = 30 },
+                    new TileCapEntry{ townHallLevel = 6, maxTiles = 32 },
+                    new TileCapEntry{ townHallLevel = 7, maxTiles = 34 },
+                    new TileCapEntry{ townHallLevel = 8, maxTiles = 36 },
+                    new TileCapEntry{ townHallLevel = 9, maxTiles = 38 },
+                    new TileCapEntry{ townHallLevel = 10, maxTiles = 39 }
+                });
+            }
+        }
+
+        private static void EnsureBuilding(Dictionary<string, int> dict, string key, int level)
+        {
+            if (!dict.ContainsKey(key))
+            {
+                dict[key] = level;
+            }
+        }
+
+        private static void EnsureStock(Dictionary<string, int> dict, string itemId, int amount)
+        {
+            if (!dict.ContainsKey(itemId))
+            {
+                dict[itemId] = amount;
+            }
         }
 
         private static void ParseCity(Dictionary<string, object> cityDict, StartProfileCityDefinition city)

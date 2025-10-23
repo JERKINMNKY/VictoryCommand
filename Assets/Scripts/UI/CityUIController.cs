@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,7 @@ namespace IFC.Systems.UI
         [SerializeField] private TileCounterView tileCounter;
         [SerializeField] private ToastView toastView;
         [SerializeField] private List<BuildingCardView> buildingCards = new List<BuildingCardView>();
-        [SerializeField] private string[] buildingOrder = { "TownHall", "GeneralHQ", "MilitaryInstitute", "Wall" };
+        [SerializeField] private string[] buildingOrder = { "TownHall", "CommandHQ", "ResearchLab", "Wall" };
 
         private CityViewModel _viewModel;
 
@@ -21,9 +22,9 @@ namespace IFC.Systems.UI
             if (gameLoop == null)
             {
 #if UNITY_2023_1_OR_NEWER
-                gameLoop = Object.FindFirstObjectByType<GameLoop>();
+            gameLoop = UnityEngine.Object.FindFirstObjectByType<GameLoop>();
 #else
-                gameLoop = Object.FindObjectOfType<GameLoop>();
+            gameLoop = UnityEngine.Object.FindObjectOfType<GameLoop>();
 #endif
             }
 
@@ -104,6 +105,8 @@ namespace IFC.Systems.UI
             }
         }
 
+        public IReadOnlyList<string> BuildingOrder => buildingOrder ?? Array.Empty<string>();
+
         public void Initialize(GameLoop loop, string city, ResourceBarView resource, TileCounterView counter, ToastView toast, List<BuildingCardView> cards)
         {
             gameLoop = loop;
@@ -116,11 +119,56 @@ namespace IFC.Systems.UI
             Refresh();
         }
 
+        public void SetBuildingOrder(IEnumerable<string> order)
+        {
+            if (order == null)
+            {
+                return;
+            }
+
+            buildingOrder = order is string[] arr ? arr : new System.Collections.Generic.List<string>(order).ToArray();
+            SetupCards();
+        }
+
         private void SetupCards()
         {
+            ValidateBuildingOrder();
             for (int i = 0; i < buildingCards.Count && i < buildingOrder.Length; i++)
             {
                 buildingCards[i].Setup(buildingOrder[i], this);
+            }
+        }
+
+        private void ValidateBuildingOrder()
+        {
+            if (gameLoop == null || buildingOrder == null)
+            {
+                return;
+            }
+
+            var catalog = gameLoop.BuildingCatalog;
+            if (catalog == null)
+            {
+                return;
+            }
+
+            // Avoid emitting warnings on the very first frame before definitions are loaded.
+            // If the catalog has no keys yet, skip validation for now; Refresh() will re-run later.
+            using (var enumerator = catalog.GetAllKeys().GetEnumerator())
+            {
+                if (!enumerator.MoveNext())
+                {
+                    return;
+                }
+            }
+
+            for (int i = 0; i < buildingOrder.Length; i++)
+            {
+                var key = buildingOrder[i];
+                if (!string.IsNullOrEmpty(key) && !catalog.TryGetDefinition(key, out _))
+                {
+                    Debug.LogWarning($"[CityUIController] Building '{key}' is not defined in the catalog.");
+                }
             }
         }
     }

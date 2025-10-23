@@ -316,8 +316,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b6a73be6be74605b2246d9487c9b5cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IFC.Systems.GameLoop
-  secondsPerTick: 60
+  secondsPerTick: 1
   seedFileName: game_state.json
+  useStartProfile: 0
+  startProfileAsset: {fileID: 0}
+  startProfileJsonPath: content/profiles/StartProfile_NewPlayer.json
 --- !u!4 &1581603412
 Transform:
   m_ObjectHideFlags: 0

@@ -59,25 +59,26 @@ namespace IFC.Systems.UI
             resourceView.Initialize(resourcesText);
 
             // City Panel
+            var order = controller.BuildingOrder;
             var cityPanel = CreatePanel(canvasGO.transform, "CityPanel", new Vector2(0f, 0f), new Vector2(0.35f, 0.8f), new Vector2(0f, 0f), new Vector2(0f, 0f));
             var vertical = cityPanel.AddComponent<VerticalLayoutGroup>();
             vertical.childForceExpandHeight = false;
             vertical.childForceExpandWidth = true;
             vertical.spacing = 6f;
 
-            string[] buildings = { "TownHall", "GeneralHQ", "MilitaryInstitute", "Wall" };
             var cardViews = new System.Collections.Generic.List<BuildingCardView>();
-            for (int i = 0; i < buildings.Length; i++)
+            for (int i = 0; i < order.Count; i++)
             {
-                var card = CreatePanel(cityPanel.transform, $"Card_{buildings[i]}", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 140f), new Vector2(0f, 0f));
-                var image = card.AddComponent<Image>();
+                var buildingId = order[i];
+                var card = CreatePanel(cityPanel.transform, $"Card_{buildingId}", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 140f), new Vector2(0f, 0f));
+                var image = card.GetComponent<Image>();
                 image.color = new Color(0f, 0f, 0f, 0.3f);
                 var layout = card.AddComponent<VerticalLayoutGroup>();
                 layout.childForceExpandHeight = false;
                 layout.childForceExpandWidth = true;
                 layout.spacing = 2f;
 
-                var nameText = CreateText(card.transform, "Name", buildings[i]);
+                var nameText = CreateText(card.transform, "Name", buildingId);
                 var levelText = CreateText(card.transform, "Level", "Level 0");
                 var costText = CreateText(card.transform, "Cost", "Cost");
                 var etaText = CreateText(card.transform, "ETA", "00:00");
@@ -135,7 +136,21 @@ namespace IFC.Systems.UI
             var go = new GameObject(name, typeof(RectTransform));
             go.transform.SetParent(parent, false);
             var text = go.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            // Unity 2023+: Arial.ttf is no longer a valid built-in font.
+            // Try LegacyRuntime.ttf first, then fall back to Arial.ttf, then OS Arial.
+            Font font = null;
+#if UNITY_2023_1_OR_NEWER
+            font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+#endif
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+            if (font == null)
+            {
+                try { font = Font.CreateDynamicFontFromOSFont("Arial", 14); } catch { }
+            }
+            text.font = font;
             text.text = value;
             text.color = Color.white;
             text.alignment = TextAnchor.MiddleLeft;
