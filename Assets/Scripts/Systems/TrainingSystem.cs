@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using UnityEngine;
 using IFC.Systems.Officers;
@@ -111,7 +112,7 @@ namespace IFC.Systems
                 return;
             }
 
-            stockpile.amount = Mathf.Max(0, stockpile.amount - queue.upkeepFoodPerTick);
+            stockpile.amount = Math.Max(0, stockpile.amount - queue.upkeepFoodPerTick);
         }
 
         private int CalculateAdjustedDuration(TrainingQueueState queue, int baseDuration)

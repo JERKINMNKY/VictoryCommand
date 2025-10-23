@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -117,12 +118,18 @@ namespace IFC.Systems
             _buildQueueSystem.SetBuildingCatalog(_buildingCatalog);
             if (logBuildingIdsOnStart) { DevActions.DumpBuildingIds(this); DevActions.DumpCitySummary(this); }
             _buildQueueSystem.SetEffectRuntime(_buildingEffectRuntime);
-            _buildController = new BuildController(_state, _buildingCatalog, _state.inventory, _state.tileCaps);
-            _statModifiers = new StatModifierRegistry();
-            BuildOfficerAssignmentViews();
-            _trainingSystem.Initialize(_state, _statModifiers);
-            _buildingFunctionSystem.Initialize(_state, _statModifiers);
             _buildingEffectRuntime.Initialize(_state, _buildingCatalog);
+            _state.player?.EnsureConsistency();
+            if (_state.player != null && _state.cities.Count > _state.player.maxCities)
+            {
+                Debug.LogWarning($"[Player] Rank {_state.player.rank} allows {_state.player.maxCities} city/cities but state contains {_state.cities.Count}.");
+                _state.player.maxCities = Math.Max(_state.player.maxCities, _state.cities.Count);
+            }
+            _buildController = new BuildController(_state, _buildingCatalog, _state.player?.tokenInventory, _state.tileCaps);
+            _statModifiers = new StatModifierRegistry();
+            _buildingFunctionSystem.Initialize(_state, _statModifiers);
+            _trainingSystem.Initialize(_state, _statModifiers);
+            BuildOfficerAssignmentViews();
             _autoTransportSystem.Initialize(_state);
             _defenseSystem.Initialize(_state);
             _mapSystem.Initialize(_state);
@@ -194,6 +201,11 @@ namespace IFC.Systems
                             view.SetAssigned(facilityId, true);
                         }
                     }
+                }
+
+                if (city.officerCapacity > 0 && city.officers.Count > city.officerCapacity)
+                {
+                    Debug.LogWarning($"[Officers] {city.displayName} over capacity ({city.officers.Count}/{city.officerCapacity}). Excess assignments are ignored until slots free up.");
                 }
 
                 _officerAssignmentViews[city.cityId] = view;

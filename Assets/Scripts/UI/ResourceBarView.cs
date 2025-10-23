@@ -37,7 +37,7 @@ namespace IFC.Systems.UI
             {
                 sb.Append(type);
                 sb.Append(':');
-                sb.Append(stockpile.amount);
+                sb.Append(stockpile.amount.ToString("N0"));
                 sb.Append(' ');
             }
         }

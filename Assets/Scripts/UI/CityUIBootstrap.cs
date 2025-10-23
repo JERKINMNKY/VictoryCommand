@@ -98,6 +98,18 @@ namespace IFC.Systems.UI
                 cardViews.Add(cardView);
             }
 
+            // Summary Panel
+            var summaryPanel = CreatePanel(canvasGO.transform, "SummaryPanel", new Vector2(0.72f, 0.2f), new Vector2(0.98f, 0.85f), new Vector2(260f, 0f), new Vector2(0.5f, 0.5f));
+            summaryPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.25f);
+            var summaryText = CreateText(summaryPanel.transform, "SummaryText", "City Summary");
+            summaryText.alignment = TextAnchor.UpperLeft;
+            summaryText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            summaryText.verticalOverflow = VerticalWrapMode.Overflow;
+            summaryText.resizeTextForBestFit = false;
+            summaryText.fontSize = 16;
+            var summaryView = summaryPanel.AddComponent<CitySummaryView>();
+            summaryView.Initialize(summaryText);
+
             // Footer
             var footer = CreatePanel(canvasGO.transform, "Footer", new Vector2(0.3f, 0f), new Vector2(0.7f, 0f), new Vector2(0f, 60f), new Vector2(0.5f, 0f));
             var footerText = CreateText(footer.transform, "TileCounter", "Tiles");
@@ -114,7 +126,7 @@ namespace IFC.Systems.UI
             toast.Initialize(toastText);
             toastCanvas.alpha = 0f;
 
-            controller.Initialize(gameLoop, cityId, resourceView, tileCounter, toast, cardViews);
+            controller.Initialize(gameLoop, cityId, resourceView, tileCounter, toast, summaryView, cardViews);
         }
 
         private static GameObject CreatePanel(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 size, Vector2 pivot)

@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using IFC.Data;
 using IFC.Systems.Officers;
 
 // Layer: Core Simulation
@@ -11,6 +14,7 @@ namespace IFC.Systems
     /// </summary>
     public class ResourceSystem : MonoBehaviour
     {
+        private const long HardResourceCap = CityConstants.RESOURCE_HARD_CAP;
         public float moralePenaltyThreshold = 0.9f;
         public float minimumMoraleFactor = 0.35f;
         public float maximumMoraleFactor = 1.25f;
@@ -56,8 +60,15 @@ namespace IFC.Systems
                 float effectiveFactor = Mathf.Clamp(moraleFactor * productionMultiplier * politicsMultiplier,
                     minimumMoraleFactor * Mathf.Max(0.1f, productionMultiplier) * Mathf.Max(0.1f, politicsMultiplier),
                     maximumMoraleFactor * Mathf.Max(1f, productionMultiplier) * Mathf.Max(1f, politicsMultiplier));
-                int totalProduced = 0;
 
+                var resourceDelta = new Dictionary<ResourceType, long>();
+                var flatBonusPerResource = new Dictionary<ResourceType, long>();
+                var percentBonusPerResource = new Dictionary<ResourceType, float>();
+                long flatBonusAll = 0;
+                float percentBonusAll = 0f;
+                float populationGain = 0f;
+
+                // Legacy production fields
                 for (int p = 0; p < city.production.Count; p++)
                 {
                     var productionField = city.production[p];
@@ -66,23 +77,169 @@ namespace IFC.Systems
                         continue;
                     }
 
-                    int produced = Mathf.RoundToInt(productionField.fields * productionField.outputPerField * effectiveFactor);
-                    var stockpile = GameStateBuilder.FindStockpile(city, productionField.resourceType);
-                    if (stockpile == null)
+                    double raw = productionField.fields * productionField.outputPerField * effectiveFactor;
+                    long produced = Math.Max(0L, (long)Math.Round(raw));
+                    AddResourceDelta(resourceDelta, productionField.resourceType, produced);
+                }
+
+                // Building function outputs
+                for (int f = 0; f < city.buildingFunctions.Count; f++)
+                {
+                    var function = city.buildingFunctions[f];
+                    switch (function.functionType)
                     {
-                        continue;
+                        case BuildingFunctionType.ResourceProduction:
+                            {
+                                double raw = function.amountPerTick * effectiveFactor;
+                                long produced = Math.Max(0L, (long)Math.Round(raw));
+                                AddResourceDelta(resourceDelta, function.resourceType, produced);
+                                break;
+                            }
+                        case BuildingFunctionType.PopulationGrowth:
+                            populationGain += function.amountPerTick;
+                            break;
+                        case BuildingFunctionType.CapacityBoost:
+                            if (function.capacityFlatBonus != 0)
+                            {
+                                if (function.appliesToAllResources)
+                                {
+                                    flatBonusAll += function.capacityFlatBonus;
+                                }
+                                else
+                                {
+                                    AddFlatBonus(flatBonusPerResource, function.resourceType, function.capacityFlatBonus);
+                                }
+                            }
+
+                            if (Math.Abs(function.capacityPercentBonus) > float.Epsilon)
+                            {
+                                if (function.appliesToAllResources)
+                                {
+                                    percentBonusAll += function.capacityPercentBonus;
+                                }
+                                else
+                                {
+                                    AddPercentBonus(percentBonusPerResource, function.resourceType, function.capacityPercentBonus);
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // Apply storage capacity bonuses before adding new resources
+                for (int s = 0; s < city.stockpiles.Count; s++)
+                {
+                    var stockpile = city.stockpiles[s];
+                    if (stockpile.baseCapacity <= 0)
+                    {
+                        stockpile.baseCapacity = Math.Min(stockpile.capacity, HardResourceCap);
+                    }
+                    stockpile.baseCapacity = Math.Min(stockpile.baseCapacity, HardResourceCap);
+
+                    long flatBonus = flatBonusAll;
+                    if (flatBonusPerResource.TryGetValue(stockpile.resourceType, out var specificFlat))
+                    {
+                        flatBonus += specificFlat;
                     }
 
-                    int availableCapacity = Mathf.Max(0, stockpile.capacity - stockpile.amount);
-                    int applied = Mathf.Min(availableCapacity, produced);
-                    stockpile.amount += applied;
-                    totalProduced += applied;
+                    float percentBonus = percentBonusAll;
+                    if (percentBonusPerResource.TryGetValue(stockpile.resourceType, out var specificPercent))
+                    {
+                        percentBonus += specificPercent;
+                    }
+
+                    long capacity = stockpile.baseCapacity;
+                    if (flatBonus != 0)
+                    {
+                        capacity = Math.Max(0L, capacity + flatBonus);
+                    }
+
+                    if (Math.Abs(percentBonus) > float.Epsilon)
+                    {
+                        capacity = (long)Math.Round(capacity * (1f + percentBonus));
+                    }
+
+                    capacity = Math.Max(0, Math.Min(HardResourceCap, capacity));
+                    stockpile.capacity = capacity;
+                    if (stockpile.amount > capacity)
+                    {
+                        stockpile.amount = capacity;
+                    }
+                }
+
+                long totalProduced = 0;
+                foreach (var kvp in resourceDelta)
+                {
+                    var stockpile = GameStateBuilder.FindStockpile(city, kvp.Key);
+                    if (stockpile == null)
+                    {
+                        stockpile = new ResourceStockpile
+                        {
+                            resourceType = kvp.Key,
+                            baseCapacity = 0,
+                            capacity = 0,
+                            amount = 0
+                        };
+                        city.stockpiles.Add(stockpile);
+                    }
+
+                    long capacity = Math.Min(HardResourceCap, Math.Max(0L, stockpile.capacity));
+                    long available = Math.Max(0L, capacity - stockpile.amount);
+                    long applied = Math.Min(available, Math.Max(0L, kvp.Value));
+                    if (applied > 0)
+                    {
+                        stockpile.amount = Math.Min(HardResourceCap, stockpile.amount + applied);
+                        totalProduced += applied;
+                    }
+                }
+
+                if (populationGain > 0f)
+                {
+                    city.population += Mathf.RoundToInt(populationGain);
                 }
 
                 message.AppendLine($"  {city.displayName}: morale={city.morale:0.00} politics={politicsScore} mul={politicsMultiplier:0.00} factor={effectiveFactor:0.00} produced={totalProduced}");
             }
 
             Debug.Log(message.ToString());
+        }
+
+        private static void AddResourceDelta(Dictionary<ResourceType, long> map, ResourceType resource, long amount)
+        {
+            if (!map.TryGetValue(resource, out var current))
+            {
+                map[resource] = amount;
+            }
+            else
+            {
+                map[resource] = current + amount;
+            }
+        }
+
+        private static void AddFlatBonus(Dictionary<ResourceType, long> map, ResourceType resource, long amount)
+        {
+            if (!map.TryGetValue(resource, out var current))
+            {
+                map[resource] = amount;
+            }
+            else
+            {
+                map[resource] = current + amount;
+            }
+        }
+
+        private static void AddPercentBonus(Dictionary<ResourceType, float> map, ResourceType resource, float amount)
+        {
+            if (!map.TryGetValue(resource, out var current))
+            {
+                map[resource] = amount;
+            }
+            else
+            {
+                map[resource] = current + amount;
+            }
         }
 
         private float CalculateMoraleFactor(float morale)

@@ -88,8 +88,12 @@ Assets/ThirdParty/
 archive/
 
 # Dev-only folders
-Assets/Tests/
+Assets/Tests/**
+!Assets/Tests/EditMode/ResourceSystemHardCapTests.cs
+!Assets/Tests/EditMode/ResourceSystemHardCapTests.cs.meta
 Assets/Tests.meta
 Assets/ScriptableObjects/
-Assets/Resources/
+Assets/Resources/**
+!Assets/Resources/Officers/
+!Assets/Resources/Officers/**
 README.md.meta

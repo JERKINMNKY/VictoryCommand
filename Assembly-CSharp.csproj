@@ -48,6 +48,7 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Data\PlayerRankTable.cs" />
     <Compile Include="Assets\Scripts\Systems\AutoTransportSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\BuildFail.cs" />
     <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\InteriorControllerInspector.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Assets\ScriptableObjects\Buildings\UltraConverterData.cs" />
     <Compile Include="Assets\Scripts\Systems\FoundationState.cs" />
     <Compile Include="Assets\ThirdParty\FreeOpenBuilding_1.1.2\FOB_1\Scripts\DoorMech.cs" />
+    <Compile Include="Assets\Tests\EditMode\ResourceSystemHardCapTests.cs" />
     <Compile Include="Assets\Scripts\Systems\Util\MiniJSON.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\HospitalData.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\CommandHQData.cs" />
@@ -103,6 +105,7 @@
     <Compile Include="Assets\ScriptableObjects\Buildings\ArmsPlantData.cs" />
     <Compile Include="Assets\Tests\EditMode\BuildingFunctionTests.cs" />
     <Compile Include="Assets\Scripts\Systems\Officers\OfficerAssignmentView.cs" />
+    <Compile Include="Assets\Scripts\Data\ResourceTypes.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\AcademyData.cs" />
     <Compile Include="Assets\Scripts\Systems\BuildingFunctionSystem.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\DockyardData.cs" />
@@ -117,6 +120,7 @@
     <Compile Include="Assets\Scripts\Gameplay\Building.cs" />
     <Compile Include="Assets\Scripts\Systems\BuildController.cs" />
     <Compile Include="Assets\Scripts\Systems\TrainingSystem.cs" />
+    <Compile Include="Assets\Scripts\UI\CitySummaryView.cs" />
     <Compile Include="Assets\Scripts\UI\CityUIBootstrap.cs" />
     <Compile Include="Assets\ThirdParty\vrbn_studios\2023_A\scripts\EmissionController.cs" />
     <Compile Include="Assets\ScriptableObjects\Buildings\ResearchCenterData.cs" />

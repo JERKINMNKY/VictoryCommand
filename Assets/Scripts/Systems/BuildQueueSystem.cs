@@ -120,13 +120,14 @@ namespace IFC.Systems
                 return true;
             }
 
-            if (_state?.inventory == null)
+            var inventory = _state?.player?.tokenInventory;
+            if (inventory == null)
             {
                 Debug.Log($"[Build] Gate {city.displayName}:{order.buildingType} L{order.targetLevel} RequiresToken");
                 return false;
             }
 
-            if (!_state.inventory.Consume(UpgradeTokenId, 1))
+            if (!inventory.Consume(UpgradeTokenId, 1))
             {
                 Debug.Log($"[Build] Gate {city.displayName}:{order.buildingType} L{order.targetLevel} RequiresToken");
                 return false;

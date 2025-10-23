@@ -15,7 +15,7 @@ namespace IFC.Systems
         {
             _state = state;
             _catalog = catalog;
-            _inventory = inventory;
+            _inventory = inventory ?? new InventoryState();
             _tileCaps = tileCaps;
         }
 

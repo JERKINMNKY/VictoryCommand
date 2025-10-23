@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using UnityEngine;
 using IFC.Data;
@@ -41,18 +42,8 @@ namespace IFC.Systems
                     switch (function.functionType)
                     {
                         case BuildingFunctionType.PopulationGrowth:
-                            if (ApplyPopulationGrowth(city, function, out int popDelta))
-                            {
-                                logBuilder.AppendLine($"  [Pop] {function.buildingId}@{city.displayName} +{popDelta} population (L{function.level})");
-                                logLines++;
-                            }
-                            break;
                         case BuildingFunctionType.ResourceProduction:
-                            if (ApplyResourceProduction(city, function, out int produced, out ResourceType producedType))
-                            {
-                                logBuilder.AppendLine($"  [Prod] {function.buildingId}@{city.displayName} +{produced} {producedType} (L{function.level})");
-                                logLines++;
-                            }
+                            // Handled by ResourceSystem now (still logged there)
                             break;
                         case BuildingFunctionType.TrainingSpeedBuff:
                             if (ApplyTrainingSpeedBuff(function, city))
@@ -80,45 +71,6 @@ namespace IFC.Systems
             {
                 Debug.Log(logBuilder.ToString());
             }
-        }
-
-        private bool ApplyPopulationGrowth(CityState city, BuildingFunctionState function, out int delta)
-        {
-            delta = Mathf.RoundToInt(function.amountPerTick);
-            if (delta <= 0)
-            {
-                return false;
-            }
-
-            city.population = Mathf.Max(0, city.population + delta);
-            return true;
-        }
-
-        private bool ApplyResourceProduction(CityState city, BuildingFunctionState function, out int produced, out IFC.Data.ResourceType resourceType)
-        {
-            produced = Mathf.RoundToInt(function.amountPerTick);
-            resourceType = function.resourceType;
-            if (produced <= 0)
-            {
-                return false;
-            }
-
-            var stockpile = GameStateBuilder.FindStockpile(city, resourceType);
-            if (stockpile == null)
-            {
-                return false;
-            }
-
-            int availableCapacity = Mathf.Max(0, stockpile.capacity - stockpile.amount);
-            if (availableCapacity <= 0)
-            {
-                return false;
-            }
-
-            int applied = Mathf.Min(availableCapacity, produced);
-            stockpile.amount += applied;
-            produced = applied;
-            return applied > 0;
         }
 
         private bool ApplyTrainingSpeedBuff(BuildingFunctionState function, CityState city)
@@ -161,33 +113,34 @@ namespace IFC.Systems
                 return false;
             }
 
-            int transferable = Mathf.Min(source.amount, spent);
+            long transferable = Math.Min(source.amount, (long)spent);
             if (transferable <= 0)
             {
                 return false;
             }
 
-            gained = Mathf.RoundToInt(transferable * Mathf.Max(0f, function.exchangeRate));
-            if (gained <= 0)
+            long potentialGain = (long)Math.Round(transferable * Mathf.Max(0f, function.exchangeRate));
+            if (potentialGain <= 0)
             {
                 return false;
             }
 
-            int capacity = Mathf.Max(0, target.capacity - target.amount);
+            long capacity = Math.Max(0L, target.capacity - target.amount);
             if (capacity <= 0)
             {
                 return false;
             }
 
-            int applied = Mathf.Min(capacity, gained);
+            long applied = Math.Min(capacity, potentialGain);
             if (applied <= 0)
             {
                 return false;
             }
 
-            source.amount -= transferable;
-            target.amount += applied;
-            gained = applied;
+            source.amount = Math.Max(0, source.amount - transferable);
+            target.amount = Math.Min(target.capacity, target.amount + applied);
+            spent = (int)Math.Min(int.MaxValue, transferable);
+            gained = (int)Math.Min(int.MaxValue, applied);
             return applied > 0;
         }
     }

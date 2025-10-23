@@ -226,6 +226,35 @@ namespace IFC.Systems
     }
 
     [Serializable]
+    public class PlayerState
+    {
+        public string rank = PlayerRankTable.Private;
+        public int maxCities = PlayerRankTable.GetCityLimit(PlayerRankTable.Private);
+        public InventoryState tokenInventory = new InventoryState();
+
+        public void EnsureConsistency()
+        {
+            if (string.IsNullOrEmpty(rank))
+            {
+                rank = PlayerRankTable.Private;
+            }
+
+            maxCities = PlayerRankTable.GetCityLimit(rank);
+
+            if (tokenInventory == null)
+            {
+                tokenInventory = new InventoryState();
+            }
+        }
+
+        public void SetRank(string newRank)
+        {
+            rank = string.IsNullOrEmpty(newRank) ? PlayerRankTable.Private : newRank;
+            maxCities = PlayerRankTable.GetCityLimit(rank);
+        }
+    }
+
+    [Serializable]
     public class SeedBuildingFunctionConfig
     {
         public string buildingId = string.Empty;
@@ -253,6 +282,9 @@ namespace IFC.Systems
         public float exchangeRate = 1f;
         public string facilityId = string.Empty;
         public float trainingMultiplier = 1f;
+        public long capacityFlatBonus = 0;
+        public float capacityPercentBonus = 0f;
+        public bool appliesToAllResources = true;
     }
 
     [Serializable]
@@ -307,8 +339,8 @@ namespace IFC.Systems
     public class SeedResourceStockpile
     {
         public ResourceType resourceType = ResourceType.Food;
-        public int stored = 0;
-        public int capacity = 10000;
+        public long stored = 0;
+        public long capacity = 10000;
     }
 
     [Serializable]
@@ -418,10 +450,28 @@ namespace IFC.Systems
         public WorldState world = new WorldState();
         public MissionTrackerState missions = new MissionTrackerState();
         public BattleQueueState battleQueue = new BattleQueueState();
-        public InventoryState inventory = new InventoryState();
+        public PlayerState player = new PlayerState();
         public TileCapTable tileCaps = new TileCapTable();
         public UnlockRuleSet unlockRules = new UnlockRuleSet();
         public List<string> rookieMissionIds = new List<string>();
+
+#pragma warning disable CS0618
+        [System.Obsolete("Use player.tokenInventory instead.")]
+        public InventoryState inventory
+        {
+            get
+            {
+                player ??= new PlayerState();
+                player.EnsureConsistency();
+                return player.tokenInventory;
+            }
+            set
+            {
+                player ??= new PlayerState();
+                player.tokenInventory = value ?? new InventoryState();
+            }
+        }
+#pragma warning restore CS0618
 
         public CityState GetCityById(string cityId)
         {
@@ -459,14 +509,18 @@ namespace IFC.Systems
         public List<string> tags = new List<string>();
         public List<BuildingLevelState> buildings = new List<BuildingLevelState>();
         public Dictionary<string, int> slotUnlocks = new Dictionary<string, int>();
+        public int officerCapacity = 0;
+        public int marchSlots = 0;
+        public int transportSlots = 0;
     }
 
     [Serializable]
     public class ResourceStockpile
     {
         public ResourceType resourceType = ResourceType.Food;
-        public int amount = 0;
-        public int capacity = 10000;
+        public long amount = 0;
+        public long capacity = 10000;
+        public long baseCapacity = 10000;
     }
 
     [Serializable]
@@ -634,11 +688,14 @@ namespace IFC.Systems
                 for (int r = 0; r < citySeed.resources.Count; r++)
                 {
                     var resourceSeed = citySeed.resources[r];
+                    long stored = Math.Max(0, Math.Min(resourceSeed.capacity, resourceSeed.stored));
+                    long capacity = Math.Max(resourceSeed.capacity, resourceSeed.stored);
                     cityState.stockpiles.Add(new ResourceStockpile
                     {
                         resourceType = resourceSeed.resourceType,
-                        amount = Mathf.Clamp(resourceSeed.stored, 0, resourceSeed.capacity),
-                        capacity = Mathf.Max(resourceSeed.capacity, resourceSeed.stored)
+                        amount = stored,
+                        capacity = capacity,
+                        baseCapacity = capacity
                     });
                 }
 
@@ -767,7 +824,9 @@ namespace IFC.Systems
             state.world = BuildWorldState(seed.world);
             state.missions = BuildMissionTracker(seed.missions);
             state.battleQueue = BuildBattleQueue(seed.pendingBattles);
-            state.inventory = BuildInventoryState(seed.inventory);
+            state.player.tokenInventory = BuildInventoryState(seed.inventory);
+            state.player.EnsureConsistency();
+            state.player.maxCities = Math.Max(state.player.maxCities, state.cities.Count);
             state.tileCaps = seed.tileCaps ?? new TileCapTable();
             state.unlockRules = seed.unlockRules ?? new UnlockRuleSet();
             if (seed.rookieMissions != null)
@@ -832,11 +891,13 @@ namespace IFC.Systems
             {
                 if (System.Enum.TryParse(kvp.Key, out ResourceType resourceType))
                 {
+                    long stored = Math.Max(0, (long)kvp.Value);
+                    long capacity = Math.Max(10000L, stored + 5000L);
                     cityConfig.resources.Add(new SeedResourceStockpile
                     {
                         resourceType = resourceType,
-                        stored = Mathf.Max(0, kvp.Value),
-                        capacity = Mathf.Max(10000, Mathf.Max(0, kvp.Value) + 5000)
+                        stored = stored,
+                        capacity = capacity
                     });
                 }
                 else

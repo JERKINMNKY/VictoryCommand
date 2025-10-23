@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using IFC.Data;
 using UnityEngine;
 
 // Layer: Core Simulation
@@ -128,13 +129,14 @@ namespace IFC.Systems
                     var stockpile = GameStateBuilder.FindStockpile(city, definition.reward.resourceType.Value);
                     if (stockpile != null)
                     {
-                        stockpile.amount += definition.reward.amount;
+                        long hardCap = CityConstants.RESOURCE_HARD_CAP;
+                        stockpile.amount = Math.Max(0, Math.Min(hardCap, stockpile.amount + definition.reward.amount));
                     }
                 }
             }
             else if (!string.IsNullOrEmpty(definition.reward.inventoryItemId))
             {
-                _state.inventory.Add(definition.reward.inventoryItemId, definition.reward.amount);
+                _state.player?.tokenInventory.Add(definition.reward.inventoryItemId, definition.reward.amount);
             }
         }
     }

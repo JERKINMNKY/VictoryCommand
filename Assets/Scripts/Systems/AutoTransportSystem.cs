@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using UnityEngine;
 
@@ -61,7 +62,7 @@ namespace IFC.Systems
                         continue;
                     }
 
-                    int transferable = Mathf.Min(route.amountPerShipment, sourceStockpile.amount);
+                    long transferable = Math.Min((long)route.amountPerShipment, sourceStockpile.amount);
                     if (transferable <= 0)
                     {
                         sb.AppendLine($"  {sourceCity.displayName}: Not enough {route.resourceType} for shipment");
@@ -69,10 +70,10 @@ namespace IFC.Systems
                         continue;
                     }
 
-                    int freeCapacity = Mathf.Max(0, targetStockpile.capacity - targetStockpile.amount);
-                    int shipped = Mathf.Min(transferable, freeCapacity);
-                    sourceStockpile.amount -= shipped;
-                    targetStockpile.amount += shipped;
+                    long freeCapacity = Math.Max(0L, targetStockpile.capacity - targetStockpile.amount);
+                    long shipped = Math.Min(transferable, freeCapacity);
+                    sourceStockpile.amount = Math.Max(0, sourceStockpile.amount - shipped);
+                    targetStockpile.amount = Math.Min(targetStockpile.capacity, targetStockpile.amount + shipped);
                     route.secondsUntilNext = route.intervalSeconds;
 
                     sb.AppendLine($"  {sourceCity.displayName} -> {targetCity.displayName}: {shipped} {route.resourceType}");

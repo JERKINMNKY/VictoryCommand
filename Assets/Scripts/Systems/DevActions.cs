@@ -1,4 +1,5 @@
 using System;
+using IFC.Data;
 using IFC.Systems.UI;
 using UnityEngine;
 
@@ -11,13 +12,14 @@ namespace IFC.Systems
     {
         public static void GrantUpgradeToken(GameLoop loop, int amount)
         {
-            if (loop?.CurrentState?.inventory == null || amount <= 0)
+            var inventory = loop?.CurrentState?.player?.tokenInventory;
+            if (inventory == null || amount <= 0)
             {
                 Debug.LogWarning("[Dev] Invalid token grant request.");
                 return;
             }
 
-            loop.CurrentState.inventory.Add(BuildQueueSystem.UpgradeTokenId, amount);
+            inventory.Add(BuildQueueSystem.UpgradeTokenId, amount);
             Debug.Log($"[Dev] Granted {BuildQueueSystem.UpgradeTokenId} x{amount}");
             UIRefreshService.RefreshAll();
         }
@@ -42,23 +44,31 @@ namespace IFC.Systems
                 var stockpile = GameStateBuilder.FindStockpile(city, resourceType);
                 if (stockpile == null)
                 {
+                    long hardCap = CityConstants.RESOURCE_HARD_CAP;
+                    long initial = Math.Max(10000L, Math.Abs((long)amount));
+                    initial = Math.Min(hardCap, initial);
                     city.stockpiles.Add(new ResourceStockpile
                     {
                         resourceType = resourceType,
-                        amount = Mathf.Max(0, amount),
-                        capacity = Mathf.Max(10000, amount)
+                        amount = Math.Max(0, Math.Min(hardCap, (long)amount)),
+                        baseCapacity = initial,
+                        capacity = initial
                     });
                 }
                 else
                 {
-                    stockpile.amount = Mathf.Max(0, stockpile.amount + amount);
+                    long delta = amount;
+                    long hardCap = CityConstants.RESOURCE_HARD_CAP;
+                    stockpile.baseCapacity = Math.Min(stockpile.baseCapacity, hardCap);
+                    stockpile.capacity = Math.Min(stockpile.capacity, hardCap);
+                    stockpile.amount = Math.Max(0, Math.Min(hardCap, stockpile.amount + delta));
                 }
 
                 Debug.Log($"[Dev] Granted {resourceKey} x{amount} to {city.displayName}");
             }
             else
             {
-                loop.CurrentState.inventory.Add(resourceKey, amount);
+                loop.CurrentState?.player?.tokenInventory.Add(resourceKey, amount);
                 Debug.Log($"[Dev] Added inventory item {resourceKey} x{amount}");
             }
 

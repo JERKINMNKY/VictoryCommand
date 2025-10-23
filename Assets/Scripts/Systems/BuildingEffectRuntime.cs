@@ -73,6 +73,10 @@ namespace IFC.Systems
                 city.buildingFunctions.Clear();
             }
 
+            city.officerCapacity = 0;
+            city.marchSlots = 0;
+            city.transportSlots = 0;
+
             for (int i = 0; i < city.buildings.Count; i++)
             {
                 var building = city.buildings[i];
@@ -144,16 +148,26 @@ namespace IFC.Systems
                     case "TokenGeneration":
                         ApplyTokenGeneration(city, definition, level, effect);
                         break;
+                    case "StorageBonus":
+                        ApplyStorageBonus(city, definition, level, effect, percent: false);
+                        break;
+                    case "StorageBonusPercent":
+                        ApplyStorageBonus(city, definition, level, effect, percent: true);
+                        break;
+                    case "OfficerCap":
+                        ApplyOfficerCap(city, definition, level, effect);
+                        break;
+                    case "MarchSlots":
+                        ApplyMarchSlots(city, level, effect);
+                        break;
+                    case "TransportQueues":
+                        ApplyTransportSlots(city, level, effect);
+                        break;
                     case "TileCap":
                     case "TokenGate":
-                    case "MarchSlots":
-                    case "TransportQueues":
                     case "TransportSpeed":
                     case "TransportCapacity":
-                    case "OfficerCap":
                     case "OfficerBonus":
-                    case "StorageBonus":
-                    case "StorageBonusPercent":
                     case "MarchPayload":
                     case "EnergyRating":
                     case "QueueControl":
@@ -284,6 +298,123 @@ namespace IFC.Systems
         private void ApplyTokenGeneration(CityState city, BuildingDefinition definition, int level, BuildingEffectDefinition effect)
         {
             // Token generation is handled via dedicated inventory pipelines, not generic building functions.
+        }
+
+        private void ApplyStorageBonus(CityState city, BuildingDefinition definition, int level, BuildingEffectDefinition effect, bool percent)
+        {
+            bool appliesToAll = string.IsNullOrEmpty(effect.resource);
+            ResourceType resourceType = ResourceType.Food;
+            if (!appliesToAll)
+            {
+                if (!Enum.TryParse(effect.resource, true, out resourceType))
+                {
+                    Debug.LogWarning($"[BuildingEffectRuntime] Unknown storage resource '{effect.resource}' for building {definition.id}");
+                    return;
+                }
+            }
+
+            var state = new BuildingFunctionState
+            {
+                buildingId = definition.id,
+                buildingType = definition.id,
+                functionType = BuildingFunctionType.CapacityBoost,
+                level = level,
+                resourceType = resourceType,
+                appliesToAllResources = appliesToAll
+            };
+
+            if (percent)
+            {
+                float percentBonus = 0f;
+                if (effect.perLevel != 0f)
+                {
+                    percentBonus += effect.perLevel * level;
+                }
+                if (effect.baseAmount != 0f)
+                {
+                    percentBonus += effect.baseAmount;
+                }
+                if (effect.amountPerLevel != 0f)
+                {
+                    percentBonus += effect.amountPerLevel * Mathf.Max(0, level - 1);
+                }
+                if (effect.baseRate != 0f)
+                {
+                    percentBonus += effect.baseRate;
+                }
+                if (effect.ratePerLevel != 0f)
+                {
+                    percentBonus += effect.ratePerLevel * Mathf.Max(0, level - 1);
+                }
+
+                state.capacityPercentBonus = percentBonus;
+            }
+            else
+            {
+                float amount = effect.baseAmount + effect.amountPerLevel * Mathf.Max(0, level - 1);
+                state.capacityFlatBonus = (long)Mathf.RoundToInt(amount);
+            }
+
+            city.buildingFunctions.Add(state);
+        }
+
+        private void ApplyOfficerCap(CityState city, BuildingDefinition definition, int level, BuildingEffectDefinition effect)
+        {
+            float value = effect.baseAmount + effect.amountPerLevel * Mathf.Max(0, level - 1);
+            if (effect.perLevel != 0f)
+            {
+                value += effect.perLevel * level;
+            }
+
+            int delta = Mathf.Max(0, Mathf.RoundToInt(value));
+            city.officerCapacity = Mathf.Max(0, city.officerCapacity + delta);
+        }
+
+        private void ApplyMarchSlots(CityState city, int level, BuildingEffectDefinition effect)
+        {
+            int thresholds = GetThresholdCount(effect, level);
+            if (thresholds <= 0)
+            {
+                return;
+            }
+
+            int amountPerThreshold = effect.amount != 0 ? effect.amount : 1;
+            city.marchSlots = Mathf.Max(0, city.marchSlots + thresholds * amountPerThreshold);
+        }
+
+        private void ApplyTransportSlots(CityState city, int level, BuildingEffectDefinition effect)
+        {
+            int thresholds = GetThresholdCount(effect, level);
+            if (thresholds <= 0)
+            {
+                return;
+            }
+
+            int amountPerThreshold = effect.amount != 0 ? effect.amount : 1;
+            city.transportSlots = Mathf.Max(0, city.transportSlots + thresholds * amountPerThreshold);
+        }
+
+        private static int GetThresholdCount(BuildingEffectDefinition effect, int level)
+        {
+            if (effect.levels != null && effect.levels.Count > 0)
+            {
+                int count = 0;
+                for (int i = 0; i < effect.levels.Count; i++)
+                {
+                    if (level >= effect.levels[i])
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+
+            if (effect.perLevel != 0f)
+            {
+                return Mathf.Max(0, Mathf.RoundToInt(effect.perLevel * level));
+            }
+
+            return level > 0 ? 1 : 0;
         }
 
         private void SubscribeEvents()

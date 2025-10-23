@@ -22,7 +22,7 @@ namespace IFC.Systems.UI
             _city = _state?.GetCityById(cityId);
             _catalog = loop?.BuildingCatalog;
             _tileCaps = _state?.tileCaps;
-            _inventory = _state?.inventory;
+            _inventory = _state?.player?.tokenInventory;
         }
 
         public bool IsValid => _city != null;

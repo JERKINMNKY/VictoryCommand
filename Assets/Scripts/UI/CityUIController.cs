@@ -12,6 +12,7 @@ namespace IFC.Systems.UI
         [SerializeField] private ResourceBarView resourceBar;
         [SerializeField] private TileCounterView tileCounter;
         [SerializeField] private ToastView toastView;
+        [SerializeField] private CitySummaryView summaryView;
         [SerializeField] private List<BuildingCardView> buildingCards = new List<BuildingCardView>();
         [SerializeField] private string[] buildingOrder = { "TownHall", "CommandHQ", "ResearchLab", "Wall" };
 
@@ -57,6 +58,8 @@ namespace IFC.Systems.UI
             {
                 buildingCards[i]?.Refresh(_viewModel);
             }
+
+            summaryView?.Refresh(_viewModel);
         }
 
         public void TryUpgrade(string buildingKey)
@@ -107,13 +110,14 @@ namespace IFC.Systems.UI
 
         public IReadOnlyList<string> BuildingOrder => buildingOrder ?? Array.Empty<string>();
 
-        public void Initialize(GameLoop loop, string city, ResourceBarView resource, TileCounterView counter, ToastView toast, List<BuildingCardView> cards)
+        public void Initialize(GameLoop loop, string city, ResourceBarView resource, TileCounterView counter, ToastView toast, CitySummaryView summary, List<BuildingCardView> cards)
         {
             gameLoop = loop;
             cityId = city;
             resourceBar = resource;
             tileCounter = counter;
             toastView = toast;
+            summaryView = summary;
             buildingCards = cards;
             SetupCards();
             Refresh();

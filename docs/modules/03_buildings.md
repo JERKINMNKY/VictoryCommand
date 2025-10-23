@@ -103,12 +103,14 @@ Each subsection captures:
 * **Base Time**: 480 s
 * **Effects**: +1 march slot at levels 1, 3, 6, 9, 12, 15, 18; +1 transport queue every 5 levels.
 * **Prereqs**: TownHall ≥2; unique; 2 tiles.
+*Runtime*: Slots feed `CityState.marchSlots` / `transportSlots`; shown in the city summary overlay.
 
 #### Staff Bureau (`StaffBureau`)
 * **Base Cost**: Food 800, Steel 1 000, Oil 300
 * **Base Time**: 360 s
 * **Effects**: officer cap +1 every 2 levels, officer bonus multipliers (morale/production/construction) +3% per level.
 * **Prereqs**: TownHall ≥3, CommandHQ ≥2.
+*Runtime*: Officer cap applied via `BuildingEffectRuntime` → `CityState.officerCapacity`; commander asset provides baseline mayor stats.
 
 #### Logistics Office (`LogisticsOffice`)
 * **Base Cost**: Food 900, Steel 900, Oil 500
@@ -129,6 +131,7 @@ Each subsection captures:
 * **Base Time**: 180 s
 * **Effects**: increases safe capacity per resource by 2 000 + (level × 1 200). Stackable.
 * **Prereqs**: TownHall ≥2.
+*Runtime*: Storage bonuses are applied to `ResourceSystem` (flat + percent) with a 4 000 000 000 hard cap per resource.
 
 #### Hydroponic Farm (`Farm`)
 * **Base Cost**: Food 0, Steel 300
@@ -173,12 +176,14 @@ Each subsection captures:
 * **Base Time**: 200 s
 * **Effects**: +5% storage capacity per level, +2% march payload per level.
 * **Prereqs**: TownHall ≥3.
+*Runtime*: Percent capacity bonus feeds `ResourceSystem` during storage recalculation.
 
 #### Transport Hub (`TransportHub`)
 * **Base Cost**: Food 700, Steel 900, Oil 500
 * **Base Time**: 400 s
 * **Effects**: +1 auto-transport route at levels 1, 4, 7, 10, 13, 15.
 * **Prereqs**: CommandHQ ≥5, LogisticsOffice ≥6; unique.
+*Runtime*: Routes contribute to `CityState.transportSlots`.
 
 #### Aerial Relay (`AerialRelay`)
 * **Base Cost**: Food 500, Steel 600, Oil 800

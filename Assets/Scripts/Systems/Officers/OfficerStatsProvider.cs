@@ -42,7 +42,12 @@ namespace IFC.Systems.Officers
                 else
                 {
                     _politicsById.Add(id, officer.Politics);
-                }
+            }
+        }
+
+            if (!_politicsById.ContainsKey("Commander"))
+            {
+                _politicsById.Add("Commander", 50);
             }
         }
 

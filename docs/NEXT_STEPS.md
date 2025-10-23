@@ -86,6 +86,15 @@ Recent Changes (October 2025)
   - Added importer to create `StartProfileAsset` from JSON (Tools → Profiles → Import Start Profile). See files under `Assets/Editor/StartProfileImporter.cs` and `Assets/Scripts/Systems/Profiles/StartProfile*`.
   - Added editor drawer to select building IDs from the data catalog instead of free text when editing a start profile (`StartProfileBuildingLevelDrawer`).
   - Default new‑player scaffold applied when data is sparse: Capital city with TownHall 1, CommandHQ 1, StaffBureau 1, commander as mayor, baseline stockpile, and tile caps 1–10.
+- Resource & capacity systems
+  - `ResourceSystem` now consumes `BuildingFunctionState` outputs (ResourceProduction, PopulationGrowth), applies warehouse flat/percent bonuses, and clamps to the 4 000 000 000 hard cap using 64‑bit stockpiles (`ResourceStockpile.amount/capacity/baseCapacity`).
+  - Added `ResourceTypes` helper and `CityConstants.RESOURCE_HARD_CAP` for shared limits; dev tooling (`DevActions`) respects the clamp.
+- Player & officers
+  - Introduced `PlayerState` (`rank`, `maxCities`, `tokenInventory`) with rank table (`PlayerRankTable`). Default rank = Private (1 city). Existing seed/profile data auto-sync to the new container.
+  - Added Commander officer asset (`Assets/Resources/Officers/Commander.asset`) and fallback politics stats (50/50/50). Staff Bureau `OfficerCap` effects now populate `CityState.officerCapacity`; over-cap assignments emit warnings.
+- Slot tracking & UI
+  - Building effects populate `CityState.marchSlots` and `transportSlots` (from `MarchSlots` / `TransportQueues`).
+  - Added `CitySummaryView` overlay summarising morale, officer usage, march/transport slots, storage, token count, and base production per tick.
 - UI boot reliability
   - Defer UI bootstrap until after game state + catalogs load, preventing early “missing building” warnings and ensuring canvases spawn predictably.
   - Unity 2023 font fallback: use `LegacyRuntime.ttf`/Arial OS when built‑in Arial is unavailable.
@@ -98,3 +107,4 @@ Short Verification Checklist
 - Create/import a `StartProfileAsset` and assign it on `GameLoop`.
 - Press Play and confirm the UI canvas appears with top bar, 4 building cards, tile footer, and tick logs.
 - Use DevActionsBehaviour context menu to grant resources/tokens, place buildings, enqueue upgrades, and advance ticks.
+- Observe City Summary overlay (officer cap, slots, storage, production) updating after tick or upgrades.
